@@ -14,12 +14,12 @@ jobs:
       - name: Parse XML into JSON
         run: echo "`jq '.XmlUI="${steps.xml.outputs.contents}"' tts.json`" > tts.json
       - name: Load LUA
-        id: xml
+        id: lua
         uses: andstor/file-reader-action@v1.0.0
         with:
           path: "script.lua"
       - name: Parse LUA into JSON
-        run: echo "`jq '.LuaScript="${steps.xml.outputs.contents}"' tts.json`" > tts.json
+        run: echo "`jq '.LuaScript="${steps.lua.outputs.contents}"' tts.json`" > tts.json
       - uses: actions/upload-artifact@v3
         with:
           name: tts.json
