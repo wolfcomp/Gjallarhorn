@@ -12,14 +12,22 @@ jobs:
         with:
           path: "ui.xml"
       - name: Parse XML into JSON
-        run: echo "`jq ".XmlUI='${steps.xml.outputs.contents}'" tts.json`" > tts.json
+        uses: jossef/action-set-json-field@v2.1
+        with: 
+          file: 'tts.json'
+          field: 'XmlUI'
+          value: ${{ steps.xml.outputs.contents }}
       - name: Load LUA
         id: lua
         uses: andstor/file-reader-action@v1.0.0
         with:
           path: "script.lua"
       - name: Parse LUA into JSON
-        run: echo "`jq ".LuaScript='${steps.lua.outputs.contents}'" tts.json`" > tts.json
+        uses: jossef/action-set-json-field@v2.1
+        with: 
+          file: 'tts.json'
+          field: 'LuaScript'
+          value: ${{ steps.lua.outputs.contents }}
       - uses: actions/upload-artifact@v3
         with:
           name: tts.json
