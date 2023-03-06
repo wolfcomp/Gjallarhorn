@@ -1,0 +1,20 @@
+name: Build TTS file
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Parse XML into JSON
+        run: |
+          content=`cat ./UI.xml`
+          echo "`jq '.XmlUI="${{ content }}"' tts.json`" > tts.json
+      - name: Parse LUA into JSON
+        run: |
+          content=`cat ./script.lua`
+          echo "`jq '.LuaScript="${{ content }}"' tts.json`" > tts.json
+      - uses: actions/upload-artifact@v3
+        with:
+          name: tts.json
+          path: tts.json
