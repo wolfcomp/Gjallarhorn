@@ -224,9 +224,9 @@
     "TurnColor": "White"
   },
   "DecalPallet": [],
-  "LuaScript": "--[[ Lua code. See documentation: https://api.tabletopsimulator.com/ --]]\n\n--[[ The onLoad event is called after the game save finishes loading. --]]\nfunction onLoad()\n    --[[ print('onLoad!') --]]\nend\n\n--[[ The onUpdate event is called once per frame. --]]\nfunction onUpdate()\n    --[[ print('onUpdate loop!') --]]\nend\n\nfunction someFunc()\n    print('someFunc')\nend",
+  "LuaScript": "",
   "LuaScriptState": "",
-  "XmlUI": "<!-- Xml UI. See documentation: https://api.tabletopsimulator.com/ui/introUI/ -->\n<Button onClick=\"someFunc\" width=\"100\" height=\"100\">Click Me</Button>",
+  "XmlUI": "",
   "ObjectStates": [
     {
       "GUID": "9dae0e",
