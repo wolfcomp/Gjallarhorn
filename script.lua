@@ -3,6 +3,7 @@
 --[[ The onLoad event is called after the game save finishes loading. --]]
 function onLoad()
     --[[ print('onLoad!') --]]
+    print('onLoad!')
 end
 
 --[[ The onUpdate event is called once per frame. --]]
