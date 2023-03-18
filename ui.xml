@@ -1,2 +1,17 @@
 <!-- Xml UI. See documentation: https://api.tabletopsimulator.com/ui/introUI/ -->
-<Button onClick="someFunc" width="100" height="100">Click Me</Button>
+<TableLayout>
+    <Row></Row>
+    <Row preferredHeight="100">
+        <HorizontalLayout padding="0 60 0 20">
+            <Cell></Cell>
+            <Cell></Cell>
+            <Cell></Cell>
+            <Cell></Cell>
+            <Cell></Cell>
+            <Cell></Cell>
+            <Cell><Button onClick="destroyAllObjects">destroyAllObjects</Button></Cell>
+            <Cell><Button onClick="spawnGame">new game</Button></Cell>
+            <Cell><Button onClick="randomizeMap">randomizeMap</Button></Cell>
+        </HorizontalLayout>
+    </Row>
+</TableLayout>
