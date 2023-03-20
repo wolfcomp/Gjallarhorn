@@ -1,7 +1,6 @@
 local colors = { "White", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink" }
 local myGameObjects = {}
 local playerPawns = {}
-local playerList = {}
 --availableTileTypes = {'plains', 'forest','mountain', 'swamp'}
 local myCombatDeck = 1
 
@@ -41,16 +40,12 @@ function spawnGame()
     randomizeMap(4)
 
     --spawning in player pawns
-    playerList = Player.getPlayers()
-    local index = 0
     for _, player in ipairs(Player.getPlayers()) do
-        index = index + 1
-
         spawnInAPlayer(
             player.getHandTransform().position.x,
             player.getHandTransform().position.y,
             player.getHandTransform().position.z,
-            index
+            player.color
         )
     end
     --spawn decks
@@ -109,7 +104,7 @@ function randomType()
     return returnVar
 end
 
-function spawnInAPlayer(x, y, z, index)
+function spawnInAPlayer(x, y, z, color)
     local tile = spawnObject({
         type = 'Figurine_Custom',
         position = { x, y, z },
@@ -117,7 +112,7 @@ function spawnInAPlayer(x, y, z, index)
     })
     local params = {
         image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' ..
-            string.lower(colors[#playerPawns + 1]) .. '.png'
+            string.lower(color) .. '.png'
     }
     tile.setCustomObject(params)
 
@@ -126,7 +121,7 @@ function spawnInAPlayer(x, y, z, index)
         addThisTurn=0
         giveCombatCard=false
         giveBlueCard=false
-    ]] .. 'myPlayerIndex=' .. tostring(index) .. ' ' .. [[
+    ]] .. 'color=' .. color .. ' ' .. [[
         function onCollisionEnter(info)
             if info.collision_object.getVar('numberOfVikingsOnThisTile') then
                 addThisTurn=info.collision_object.getVar('numberOfVikingsOnThisTile')
@@ -172,6 +167,7 @@ function spawnATile(x, y, z, type)
         local tile = spawnObject({
             type = 'Custom_Tile',
             position = { x, y, z },
+            scale = { 2, 2, 2 }
         })
         local params = { image = '', image_bottom = '' }
         local tileType = 0
@@ -211,19 +207,19 @@ function spawnATile(x, y, z, type)
     end
 end
 
-function onPlayerTurn(previous_player, player)
-    if player.color == getSeatedPlayers()[#getSeatedPlayers()] and #playerPawns ~= 0 then
+function onPlayerTurn(previous_player, cur_player)
+    if cur_player.color == getSeatedPlayers()[#getSeatedPlayers()] and #playerPawns ~= 0 then
         print('new turn starting')
-        for _, player1a in pairs(playerPawns) do
-            player1a.setVar('numberOfVikings', player1a.getVar('numberOfVikings') + player1a.getVar('addThisTurn'))
-            possiblePog = player1a.editButton({
-                index = 0, label = player1a.getVar('numberOfVikings')
+        for _, player in pairs(playerPawns) do
+            player.setVar('numberOfVikings', player.getVar('numberOfVikings') + player.getVar('addThisTurn'))
+            possiblePog = player.editButton({
+                index = 0, label = player.getVar('numberOfVikings')
             })
-            if player1a.getVar('giveCombatCard') == true then
-                myCombatDeck.deal(1, playerList[player1a.getVar('myPlayerIndex')].color)
+            if player.getVar('giveCombatCard') == true then
+                myCombatDeck.deal(1, player.getVar('color'))
             end
-            if player1a.getVar('giveBlueCard') == true then
-                blueDeck.deal(1, playerList[player1a.getVar('myPlayerIndex')].color)
+            if player.getVar('giveBlueCard') == true then
+                blueDeck.deal(1, player.getVar('color'))
             end
         end
     end
