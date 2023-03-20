@@ -123,9 +123,9 @@ function spawnInAPlayer(x, y, z, index)
         image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' ..
             string.lower(colors[#playerPawns + 1]) .. '.png'
     }
-
+    print('https://screenshots.wildwolf.dev/Gjallarhorn/players/' ..
+        string.lower(colors[#playerPawns + 1]) .. '.png')
     tile.setCustomObject(params)
-
 
     tile.setLuaScript([[
         numberOfVikings=3
@@ -191,7 +191,7 @@ function spawnATile(x, y, z, type)
         if type == 'playerSpawnTile' then
             tileType = 5
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/' ..
-                string.lower(colors[#tileTypeSpawnAmounts[tileType] + 1]) .. '_tile.png'
+                string.lower(colors[tileTypeSpawnAmounts[tileType] + 1]) .. '_tile.png'
             tile.setVar("spawn", true)
         elseif type == 'forest' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/forest.png'
