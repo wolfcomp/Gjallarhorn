@@ -1,4 +1,4 @@
-local colors = { "White", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink" }
+local colors = { "Red", "White", "Orange", "Pink", "Yellow", "Purple", "Green", "Blue" }
 local myGameObjects = {}
 local playerPawns = {}
 --availableTileTypes = {'plains', 'forest','mountain', 'swamp'}
