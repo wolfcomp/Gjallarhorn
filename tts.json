@@ -18,7 +18,7 @@
   "Gravity": 2.0,
   "PlayArea": 0.501683354,
   "Table": "Table_Custom_Square",
-  "TableURL": "",
+  "TableURL": "https://screenshots.wildwolf.dev/Gjallarhorn/background.png",
   "Sky": "Sky_Cathedral",
   "Note": "",
   "TabStates": {
@@ -177,7 +177,7 @@
     }
   },
   "Lighting": {
-    "LightIntensity": 0.54,
+    "LightIntensity": 0.0,
     "LightColor": {
       "r": 1.0,
       "g": 0.9804,
@@ -200,7 +200,7 @@
       "g": 0.5,
       "b": 0.5
     },
-    "ReflectionIntensity": 1.0,
+    "ReflectionIntensity": 0.0,
     "LutIndex": 0,
     "LutContribution": 1.0,
     "LutURL": ""
@@ -229,7 +229,62 @@
   "XmlUI": "",
   "ObjectStates": [
     {
-      "GUID": "f57eff",
+      "GUID": "9c8961",
+      "Name": "Custom_Model",
+      "Transform": {
+        "posX": -0.00285160542,
+        "posY": 1.37304473,
+        "posZ": -4.39882278E-05,
+        "rotX": -3.921665E-06,
+        "rotY": 359.984039,
+        "rotZ": 2.56186968E-06,
+        "scaleX": 14.999999,
+        "scaleY": 14.999999,
+        "scaleZ": 14.999999
+      },
+      "Nickname": "",
+      "Description": "",
+      "GMNotes": "",
+      "AltLookAngle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "ColorDiffuse": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0
+      },
+      "LayoutGroupSortIndex": 0,
+      "Value": 0,
+      "Locked": true,
+      "Grid": true,
+      "Snap": true,
+      "IgnoreFoW": false,
+      "MeasureMovement": false,
+      "DragSelectable": true,
+      "Autoraise": false,
+      "Sticky": true,
+      "Tooltip": true,
+      "GridProjection": false,
+      "HideWhenFaceDown": false,
+      "Hands": false,
+      "CustomMesh": {
+        "MeshURL": "https://screenshots.wildwolf.dev/Gjallarhorn/Board.obj",
+        "DiffuseURL": "https://screenshots.wildwolf.dev/Gjallarhorn/Default_BaseColor.png",
+        "NormalURL": "https://screenshots.wildwolf.dev/Gjallarhorn/Default_Normal.png",
+        "ColliderURL": "https://screenshots.wildwolf.dev/Gjallarhorn/Board_Collision.obj",
+        "Convex": true,
+        "MaterialIndex": 1,
+        "TypeIndex": 4,
+        "CastShadows": true
+      },
+      "LuaScript": "",
+      "LuaScriptState": "",
+      "XmlUI": ""
+    },
+    {
+      "GUID": "1e3901",
       "Name": "HandTrigger",
       "Transform": {
         "posX": -9.482677,
@@ -276,7 +331,7 @@
       "XmlUI": ""
     },
     {
-      "GUID": "be3d89",
+      "GUID": "ea7af5",
       "Name": "HandTrigger",
       "Transform": {
         "posX": -28.6376858,
@@ -323,7 +378,7 @@
       "XmlUI": ""
     },
     {
-      "GUID": "dd0238",
+      "GUID": "d93ebc",
       "Name": "HandTrigger",
       "Transform": {
         "posX": 28.5665665,
@@ -370,7 +425,7 @@
       "XmlUI": ""
     },
     {
-      "GUID": "56ea4a",
+      "GUID": "8924ad",
       "Name": "HandTrigger",
       "Transform": {
         "posX": 11.8414936,
@@ -417,7 +472,7 @@
       "XmlUI": ""
     },
     {
-      "GUID": "7c1bfa",
+      "GUID": "276406",
       "Name": "HandTrigger",
       "Transform": {
         "posX": 9.482677,
@@ -464,7 +519,7 @@
       "XmlUI": ""
     },
     {
-      "GUID": "178c28",
+      "GUID": "b28425",
       "Name": "HandTrigger",
       "Transform": {
         "posX": -10.3242655,
@@ -511,7 +566,7 @@
       "XmlUI": ""
     },
     {
-      "GUID": "58146b",
+      "GUID": "ec3a80",
       "Name": "HandTrigger",
       "Transform": {
         "posX": 28.5665665,
@@ -558,7 +613,7 @@
       "XmlUI": ""
     },
     {
-      "GUID": "d5177e",
+      "GUID": "24dbf3",
       "Name": "HandTrigger",
       "Transform": {
         "posX": -28.6021252,
