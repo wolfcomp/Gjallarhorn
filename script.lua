@@ -73,11 +73,6 @@ function destroyAllObjects()
     for _, object in ipairs(myGameObjects) do
         destroyObject(object)
     end
-    for _, player in ipairs(Player.getPlayers()) do
-        for _, object in ipairs(player.getHandObjects()) do
-            destroyObject(object)
-        end
-    end
     myGameObjects = {}
     playerPawns = {}
     tileTypeSpawnAmounts = { 0, 0, 0, 0, 0 }
