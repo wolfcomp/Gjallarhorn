@@ -80,6 +80,7 @@ function destroyAllObjects()
     end
     myGameObjects = {}
     playerPawns = {}
+    tileTypeSpawnAmounts = { 0, 0, 0, 0, 0 }
     numberSpawned = 0
 end
 
@@ -123,8 +124,6 @@ function spawnInAPlayer(x, y, z, index)
         image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' ..
             string.lower(colors[#playerPawns + 1]) .. '.png'
     }
-    print('https://screenshots.wildwolf.dev/Gjallarhorn/players/' ..
-        string.lower(colors[#playerPawns + 1]) .. '.png')
     tile.setCustomObject(params)
 
     tile.setLuaScript([[
