@@ -10,6 +10,54 @@ local tileTypeSpawnAmounts = { 0, 0, 0, 0, 0 }
 local numberSpawned = 0
 --line 9
 
+-- https://stackoverflow.com/questions/5977654/how-do-i-use-the-bitwise-operator-xor-in-lua
+
+local function BitXOR(a, b) --Bitwise xor
+    local p, c = 1, 0
+    while a > 0 and b > 0 do
+        local ra, rb = a % 2, b % 2
+        if ra ~= rb then c = c + p end
+        a, b, p = (a - ra) / 2, (b - rb) / 2, p * 2
+    end
+    if a < b then a = b end
+    while a > 0 do
+        local ra = a % 2
+        if ra > 0 then c = c + p end
+        a, p = (a - ra) / 2, p * 2
+    end
+    return c
+end
+
+local function BitOR(a, b) --Bitwise or
+    local p, c = 1, 0
+    while a + b > 0 do
+        local ra, rb = a % 2, b % 2
+        if ra + rb > 0 then c = c + p end
+        a, b, p = (a - ra) / 2, (b - rb) / 2, p * 2
+    end
+    return c
+end
+
+local function BitNOT(n) --Bitwise not
+    local p, c = 1, 0
+    while n > 0 do
+        local r = n % 2
+        if r < 1 then c = c + p end
+        n, p = (n - r) / 2, p * 2
+    end
+    return c
+end
+
+local function BitAND(a, b) --Bitwise and
+    local p, c = 1, 0
+    while a > 0 and b > 0 do
+        local ra, rb = a % 2, b % 2
+        if ra + rb > 1 then c = c + p end
+        a, b, p = (a - ra) / 2, (b - rb) / 2, p * 2
+    end
+    return c
+end
+
 --based of https://gist.github.com/Uradamus/10323382
 
 function randomizeMap(times)
@@ -37,7 +85,7 @@ function spawnGame()
         mapHelperFunction(1 - mapAmounts[i] / 2, 0 + mapAmounts[i] / 2, i - 5.5, spawnPoints)
     end
 
-    randomizeMap(4)
+    -- randomizeMap(4)
 
     --spawning in player pawns
     for _, player in ipairs(Player.getPlayers()) do
@@ -76,8 +124,8 @@ end
 
 function mapHelperFunction(startIndex, endIndex, yPos, playerSpawn)
     for xPos = startIndex, endIndex, 1 do
-        local x = xPos * Grid.sizeX
-        local y = yPos * Grid.sizeY
+        local x = xPos * Grid.sizeX - Grid.sizeX / 2
+        local y = yPos * Grid.sizeY - Grid.sizeY / 2
         if playerSpawn == true then
             if xPos == startIndex or xPos == endIndex then
                 type = 'playerSpawnTile'
@@ -87,18 +135,37 @@ function mapHelperFunction(startIndex, endIndex, yPos, playerSpawn)
         else
             type = randomType()
         end
-        spawnATile(x, 1, y, type)
+        spawnATile(x, 5.5, y, type)
     end
 end
 
 function randomType()
-    local returnVar = 'forest'
-    if numberSpawned < 11 + 44 then
-        returnVar = 'plains'
-    elseif numberSpawned < 11 + 44 + 22 then
-        returnVar = 'mountain'
-    else
-        returnVar = 'swamp'
+    local returnVar = ''
+    local rand = (BitXOR((math.random(89) * math.random(89)), (math.random(89) * math.random(89))) * BitNOT(BitXOR((math.random(89) * math.random(89)), (math.random(89) * math.random(89))))) %
+        89
+    while (returnVar == '')
+    do
+        if tileTypeSpawnAmounts[1] < 44 and (rand + tileTypeSpawnAmounts[1] < 44 or rand < 44) then
+            returnVar = 'plains'
+        elseif tileTypeSpawnAmounts[3] < 11 and (rand + tileTypeSpawnAmounts[3] < 11 or rand + tileTypeSpawnAmounts[1] > 43 and rand < 44 + 11) then
+            returnVar = 'forest'
+        elseif tileTypeSpawnAmounts[2] < 22 and (rand + tileTypeSpawnAmounts[2] < 22 or rand + tileTypeSpawnAmounts[1] + tileTypeSpawnAmounts[3] > 43 + 11 and rand < 44 + 22 + 11) then
+            returnVar = 'mountain'
+        elseif tileTypeSpawnAmounts[4] < 12 and (rand + tileTypeSpawnAmounts[4] < 12 or rand + tileTypeSpawnAmounts[1] + tileTypeSpawnAmounts[2] + tileTypeSpawnAmounts[3] > 43 + 22 + 11) then
+            returnVar = 'swamp'
+        end
+        if tileTypeSpawnAmounts[1] == 44 then
+            rand = rand - 44
+        end
+        if tileTypeSpawnAmounts[2] == 22 then
+            rand = rand - 22
+        end
+        if tileTypeSpawnAmounts[3] == 11 then
+            rand = rand - 11
+        end
+        if tileTypeSpawnAmounts[4] == 12 then
+            rand = rand - 12
+        end
     end
     numberSpawned = numberSpawned + 1
     return returnVar
@@ -167,7 +234,7 @@ function spawnATile(x, y, z, type)
         local tile = spawnObject({
             type = 'Custom_Tile',
             position = { x, y, z },
-            scale = { 2, 2, 2 }
+            scale = { Grid.sizeX / 2, Grid.sizeX / 2, Grid.sizeX / 2 }
         })
         local params = { image = '', image_bottom = '' }
         local tileType = 0
@@ -186,15 +253,15 @@ function spawnATile(x, y, z, type)
         elseif type == 'forest' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/forest.png'
             tile.setVar("numberOfVikings", 2)
-            tileType = 1
+            tileType = 3
         elseif type == 'plains' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass.png'
             tile.setVar("numberOfVikings", 1)
-            tileType = 2
+            tileType = 1
         elseif type == 'mountain' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain.png'
             tile.setVar("giveCombatCard", true)
-            tileType = 3
+            tileType = 2
         elseif type == 'swamp' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/swamp.png'
             tile.setVar("giveResourceCard", true)
