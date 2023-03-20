@@ -1,73 +1,48 @@
---myPawn.highlightOn('White')
-myGameObjects = {}
-playerPawns = {}
-playerList = {}
+local colors = { "White", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink" }
+local myGameObjects = {}
+local playerPawns = {}
+local playerList = {}
 --availableTileTypes = {'plains', 'forest','mountain', 'swamp'}
-myCombatDeck = 1
+local myCombatDeck = 1
 
-blueDeck = 1
-mapAmounts = {5,7,9,11,11,11,11,11,9,7,5}
-tileTypeSpawnAmounts = {0,0,0,0,0}
-numberSpawned = 0
+local blueDeck = 1
+local mapAmounts = { 5, 7, 9, 11, 11, 11, 11, 11, 9, 7, 5 }
+local tileTypeSpawnAmounts = { 0, 0, 0, 0, 0 }
+local numberSpawned = 0
 --line 9
 
 --based of https://gist.github.com/Uradamus/10323382
 
-function randomizeMap()
-    localMap = getObjectsWithTag('tile')
-    for i = #localMap, 2, -1 do
-        local j = math.random(i)
-        obj1 = localMap[i]
-        obj1Pos = obj1.getPosition()
-        obj2 = localMap[j]
-        obj2Pos = obj2.getPosition()
-        obj1.setPosition(obj2Pos)
-        obj2.setPosition(obj1Pos)
-
+function randomizeMap(times)
+    for l = 0, times, 1 do
+        local localMap = getObjectsWithTag('tile')
+        for i = #localMap, 2, -1 do
+            local j = math.random(i)
+            local obj1 = localMap[i]
+            local obj2 = localMap[j]
+            if obj1.getVar("spawn") ~= true then
+                obj1.setPosition(obj2.getPosition())
+                obj2.setPosition(obj1.getPosition())
+            end
+        end
     end
 end
 
-
 function spawnGame()
-
-    --initial attempt at randomizing tiles
-    --[[myRandomizeZone = spawnObject({
-        type = 'ScriptingTrigger',
-        position = {0.5, 0, 1},
-        scale = {22,5,22},
-    })
-    myRandomizeZone.addTag('tile')
- 
-    myRandomizeZone.LayoutZone.setOptions({
-        randomize=true,
-        trigger_for_face_up=true,
-        trigger_for_non_cards=true,
-        --vertical_spread=2.1,
-        horizontal_spread=2.1,
-        vertical_group_padding=0.01
-    })]]--
-
-
     --spawning in the map
     for i = 1, 11, 1 do
-        spawnPoints = false
+        local spawnPoints = false
         if i == 1 or i == 4 or i == 8 or i == 11 then
             spawnPoints = true
         end
-        mapHelperFunction(1-mapAmounts[i] / 2, 0+mapAmounts[i] / 2,i - 5.5, spawnPoints)
+        mapHelperFunction(1 - mapAmounts[i] / 2, 0 + mapAmounts[i] / 2, i - 5.5, spawnPoints)
     end
 
-    randomizeMap()
-    randomizeMap()
-    randomizeMap()
-    randomizeMap()
-    
-    --print(myRandomizeZone)
-    myGameObjects[#myGameObjects+1] = myRandomizeZone
-    
+    randomizeMap(4)
+
     --spawning in player pawns
     playerList = Player.getPlayers()
-    index = 0
+    local index = 0
     for _, player in ipairs(Player.getPlayers()) do
         index = index + 1
 
@@ -77,30 +52,22 @@ function spawnGame()
             player.getHandTransform().position.z,
             index
         )
-
     end
     --spawn decks
     myCombatDeck = spawnObject({
         type = 'Deck',
-        position = {10, 3, 0},
+        position = { 10, 3, 0 },
     })
     myCombatDeck.use_hands = true
-    myGameObjects[#myGameObjects+1] = myCombatDeck
-    
+    myGameObjects[#myGameObjects + 1] = myCombatDeck
+
     blueDeck = spawnObject({
-            type = 'Deck',
-            position = {-10, 3, 0},
+        type = 'Deck',
+        position = { -10, 3, 0 },
     })
     blueDeck.use_hands = true
-    myGameObjects[#myGameObjects+1] = blueDeck
+    myGameObjects[#myGameObjects + 1] = blueDeck
 end
-
-
-
-
-
-
-
 
 function destroyAllObjects()
     for _, object in ipairs(myGameObjects) do
@@ -117,9 +84,9 @@ function destroyAllObjects()
 end
 
 function mapHelperFunction(startIndex, endIndex, yPos, playerSpawn)
-    for xPos=startIndex,endIndex,1 do
-        x = xPos*Grid.sizeX
-        y = yPos*Grid.sizeY
+    for xPos = startIndex, endIndex, 1 do
+        local x = xPos * Grid.sizeX
+        local y = yPos * Grid.sizeY
         if playerSpawn == true then
             if xPos == startIndex or xPos == endIndex then
                 type = 'playerSpawnTile'
@@ -129,39 +96,38 @@ function mapHelperFunction(startIndex, endIndex, yPos, playerSpawn)
         else
             type = randomType()
         end
-        spawnATile(x,1,y,type)
+        spawnATile(x, 1, y, type)
     end
 end
 
 function randomType()
-    returnVar = 'forest'
-    if numberSpawned < 11 then
-    elseif numberSpawned < 11+44 then
+    local returnVar = 'forest'
+    if numberSpawned < 11 + 44 then
         returnVar = 'plains'
-    elseif numberSpawned < 11+44+22 then
+    elseif numberSpawned < 11 + 44 + 22 then
         returnVar = 'mountain'
     else
         returnVar = 'swamp'
     end
-    numberSpawned = numberSpawned+1
+    numberSpawned = numberSpawned + 1
     return returnVar
 end
 
-
 function spawnInAPlayer(x, y, z, index)
-    myPawn = spawnObject({
-        type = 'Custom_Model',
-        position = {x, y, z},
+    local tile = spawnObject({
+        type = 'Figurine_Custom',
+        position = { x, y, z },
         --scale = {0.9,0.9,1}
     })
-    params = {
-        mesh = 'C:/temp Tabletop Files/Coffee Cup.obj',
+    local params = {
+        image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' ..
+            string.lower(colors[#playerPawns + 1]) .. '.png'
     }
 
-    myPawn.setCustomObject(params)
+    tile.setCustomObject(params)
 
 
-    myPawn.setLuaScript([[
+    tile.setLuaScript([[
         numberOfVikings=3
         addThisTurn=0
         giveCombatCard=false
@@ -180,7 +146,7 @@ function spawnInAPlayer(x, y, z, index)
                 tile.highlightOn('White')
             end
         end
-        
+
         function onDrop( player_color)
             for _, tile in ipairs(getObjectsWithTag('tile')) do
                 tile.highlightOff('White')
@@ -188,114 +154,82 @@ function spawnInAPlayer(x, y, z, index)
         end
     ]])
 
-    textButtonParams = {
+    local textButtonParams = {
         click_function = 'notAfunc',
         function_owner = self,
         label          = '3',
-        position       = {0, 3, 0},
-        rotation       = {90, 180, 0},
+        position       = { 0, 3, 0 },
+        rotation       = { 90, 180, 0 },
         width          = 800,
         height         = 400,
         font_size      = 340,
-        color          = {0.5, 0.5, 0.5},
-        font_color     = {1, 1, 1},
+        color          = { 0.5, 0.5, 0.5 },
+        font_color     = { 1, 1, 1 },
         tooltip        = 'number of vikings',
     }
 
-    myPawn.createButton(textButtonParams)
-    playerPawns[#playerPawns+1] = myPawn
-    myGameObjects[#myGameObjects+1] = myPawn
+    tile.createButton(textButtonParams)
+    playerPawns[#playerPawns + 1] = tile
+    myGameObjects[#myGameObjects + 1] = tile
 end
 
 function spawnATile(x, y, z, type)
-
-
     if type then
-
-        myPawn = spawnObject({
+        local tile = spawnObject({
             type = 'Custom_Tile',
-            position = {x, y, z},
+            position = { x, y, z },
         })
+        local params = { image = '', image_bottom = '' }
+        local tileType = 0
 
-        myPawn.grid_projection = true
-        myPawn.setName(type)
-        
+        tile.grid_projection = true
+        tile.setName(type)
+        tile.setVar("numberOfVikingsOnThisTile", 0)
+        tile.setVar("giveCombatCard", false)
+        tile.setVar("giveResourceCard", false)
+        tile.setVar("spawn", false)
         if type == 'playerSpawnTile' then
-
-            params = {image = 'C:/temp Tabletop Files/playerSpawnTile.png'}
-            myPawn.setLuaScript([[
-                numberOfVikingsOnThisTile=0
-                giveCombatCard=false
-                giveBlueCard=false
-            ]])
-            myPawn.addTag('tile')
-            tileTypeSpawnAmounts[5] = tileTypeSpawnAmounts[5]+1
+            tileType = 5
+            params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/' ..
+                string.lower(colors[#tileTypeSpawnAmounts[tileType] + 1]) .. '_tile.png'
+            tile.setVar("spawn", true)
         elseif type == 'forest' then
-
-            params = {image = 'C:/temp Tabletop Files/forest.png'}
-            myPawn.setLuaScript([[
-                numberOfVikingsOnThisTile=2
-                giveCombatCard=false
-                giveBlueCard=false
-            ]])
-            myPawn.addTag('tile')
-            tileTypeSpawnAmounts[1] = tileTypeSpawnAmounts[1]+1
-
-
-
-
-
+            params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/forest.png'
+            tile.setVar("numberOfVikings", 2)
+            tileType = 1
         elseif type == 'plains' then
-
-            params = {image = 'C:/temp Tabletop Files/plains.png'}
-            myPawn.setLuaScript([[
-                numberOfVikingsOnThisTile=1
-                giveCombatCard=false
-                giveBlueCard=false
-            ]])
-            myPawn.addTag('tile')
-            tileTypeSpawnAmounts[2] = tileTypeSpawnAmounts[2]+1
-
+            params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass.png'
+            tile.setVar("numberOfVikings", 1)
+            tileType = 2
         elseif type == 'mountain' then
-
-            params = {image = 'C:/temp Tabletop Files/mountain.png'}
-            myPawn.setLuaScript([[
-                numberOfVikingsOnThisTile=0
-                giveCombatCard=true
-                giveBlueCard=false
-            ]])
-            myPawn.addTag('tile')
-            tileTypeSpawnAmounts[3] = tileTypeSpawnAmounts[3]+1
-
+            params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain.png'
+            tile.setVar("giveCombatCard", true)
+            tileType = 3
         elseif type == 'swamp' then
-
-            params = {image = 'C:/temp Tabletop Files/swamp.png'}
-            myPawn.setLuaScript([[
-                numberOfVikingsOnThisTile=0
-                giveCombatCard=false
-                giveBlueCard=true
-            ]])
-            myPawn.addTag('tile')
-            tileTypeSpawnAmounts[4] = tileTypeSpawnAmounts[4]+1
+            params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/swamp.png'
+            tile.setVar("giveResourceCard", true)
+            tileType = 4
         end
-        myPawn.setCustomObject(params)
-        myGameObjects[#myGameObjects+1] = myPawn
+        tile.addTag('tile')
+        tile.setCustomObject(params)
+        myGameObjects[#myGameObjects + 1] = tile
+        tileTypeSpawnAmounts[tileType] = tileTypeSpawnAmounts[tileType] + 1
     end
 end
 
 function onPlayerTurn(previous_player, player)
-    if player.color == getSeatedPlayers()[#getSeatedPlayers()] and #playerPawns != 0 then
+    if player.color == getSeatedPlayers()[#getSeatedPlayers()] and #playerPawns ~= 0 then
         print('new turn starting')
         for _, player1a in pairs(playerPawns) do
-            player1a.setVar('numberOfVikings', player1a.getVar('numberOfVikings')+player1a.getVar('addThisTurn'))
+            player1a.setVar('numberOfVikings', player1a.getVar('numberOfVikings') + player1a.getVar('addThisTurn'))
             possiblePog = player1a.editButton({
-                index=0, label=player1a.getVar('numberOfVikings')
+                index = 0, label = player1a.getVar('numberOfVikings')
             })
             if player1a.getVar('giveCombatCard') == true then
-                myCombatDeck.deal(1,playerList[player1a.getVar('myPlayerIndex')].color)
+                myCombatDeck.deal(1, playerList[player1a.getVar('myPlayerIndex')].color)
             end
             if player1a.getVar('giveBlueCard') == true then
-                blueDeck.deal(1,playerList[player1a.getVar('myPlayerIndex')].color)
+                blueDeck.deal(1, playerList[player1a.getVar('myPlayerIndex')].color)
             end
         end
     end
