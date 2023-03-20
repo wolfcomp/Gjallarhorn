@@ -20,7 +20,7 @@ function randomizeMap(times)
             local j = math.random(i)
             local obj1 = localMap[i]
             local obj2 = localMap[j]
-            if obj1.getVar("spawn") ~= true then
+            if obj1.getVar("spawn") ~= true and obj2.getVar("spawn") ~= true then
                 obj1.setPosition(obj2.getPosition())
                 obj2.setPosition(obj1.getPosition())
             end
