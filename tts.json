@@ -218,7 +218,7 @@
     "Type": 0,
     "TurnOrder": [],
     "Reverse": false,
-    "SkipEmpty": true,
+    "SkipEmpty": false,
     "DisableInteractions": true,
     "PassTurns": true,
     "TurnColor": "White"
