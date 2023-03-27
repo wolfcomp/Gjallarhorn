@@ -99,14 +99,14 @@ function spawnGame()
     --spawn decks
     myCombatDeck = spawnObject({
         type = 'Deck',
-        position = { 10, 3, 0 },
+        position = { 10, 10, 0 },
     })
     myCombatDeck.use_hands = true
     myGameObjects[#myGameObjects + 1] = myCombatDeck
 
     blueDeck = spawnObject({
         type = 'Deck',
-        position = { -10, 3, 0 },
+        position = { -10, 10, 0 },
     })
     blueDeck.use_hands = true
     myGameObjects[#myGameObjects + 1] = blueDeck
