@@ -184,14 +184,14 @@ function spawnInAPlayer(x, y, z, color)
     tile.setCustomObject(params)
 
     tile.setLuaScript([[
-        numberOfVikings=3
+        myNumberOfVikings=3
         addThisTurn=0
         giveCombatCard=false
         giveBlueCard=false
     ]] .. 'color=' .. color .. ' ' .. [[
         function onCollisionEnter(info)
-            if info.collision_object.getVar('numberOfVikingsOnThisTile') then
-                addThisTurn=info.collision_object.getVar('numberOfVikingsOnThisTile')
+            if info.collision_object.getVar('numberOfVikings') then
+                addThisTurn=info.collision_object.getVar('numberOfVikings')
                 giveCombatCard = info.collision_object.getVar('giveCombatCard')
                 giveBlueCard = info.collision_object.getVar('giveBlueCard')
             end
@@ -241,7 +241,7 @@ function spawnATile(x, y, z, type)
 
         tile.grid_projection = true
         tile.setName(type)
-        tile.setVar("numberOfVikingsOnThisTile", 0)
+        tile.setVar("numberOfVikings", 0)
         tile.setVar("giveCombatCard", false)
         tile.setVar("giveResourceCard", false)
         tile.setVar("spawn", false)
@@ -278,9 +278,9 @@ function onPlayerTurn(previous_player, cur_player)
     if cur_player.color == getSeatedPlayers()[#getSeatedPlayers()] and #playerPawns ~= 0 then
         print('new turn starting')
         for _, player in pairs(playerPawns) do
-            player.setVar('numberOfVikings', player.getVar('numberOfVikings') + player.getVar('addThisTurn'))
+            player.setVar('myNumberOfVikings', player.getVar('myNumberOfVikings') + player.getVar('addThisTurn'))
             possiblePog = player.editButton({
-                index = 0, label = player.getVar('numberOfVikings')
+                index = 0, label = player.getVar('myNumberOfVikings')
             })
             if player.getVar('giveCombatCard') == true then
                 myCombatDeck.deal(1, player.getVar('color'))
