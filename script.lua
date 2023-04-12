@@ -8,7 +8,25 @@ local blueDeck = 1
 local mapAmounts = { 5, 7, 9, 11, 11, 11, 11, 11, 9, 7, 5 }
 local tileTypeSpawnAmounts = { 0, 0, 0, 0, 0 }
 local numberSpawned = 0
+
+local isRagnarokOn = false
+local ragnarokTurn = 0
+local ragnarokTurnNum = 0
+local everyNturnShrink = 3
+
 --line 9
+
+function StartRagnarok()
+    --not working
+    print('starting Ragnarok!')
+    isRagnarokOn = true
+end
+function ragnarokFunc(i)
+    for _, object in ipairs(getObjectsWithTag('ragnarok'..i)) do
+        destroyObject(object)
+    end
+end
+
 
 -- https://stackoverflow.com/questions/5977654/how-do-i-use-the-bitwise-operator-xor-in-lua
 
@@ -78,11 +96,11 @@ end
 function spawnGame()
     --spawning in the map
     for i = 1, 11, 1 do
-        local spawnPoints = false
+        spawnPoints = false
         if i == 1 or i == 4 or i == 8 or i == 11 then
             spawnPoints = true
         end
-        mapHelperFunction(1 - mapAmounts[i] / 2, 0 + mapAmounts[i] / 2, i - 5.5, spawnPoints)
+        mapHelperFunction(1-mapAmounts[i] / 2, 0+mapAmounts[i] / 2,i - 5.5, spawnPoints,i)
     end
 
     -- randomizeMap(4)
@@ -122,7 +140,7 @@ function destroyAllObjects()
     numberSpawned = 0
 end
 
-function mapHelperFunction(startIndex, endIndex, yPos, playerSpawn)
+function mapHelperFunction(startIndex, endIndex, yPos, playerSpawn, index)
     for xPos = startIndex, endIndex, 1 do
         local x = xPos * Grid.sizeX - Grid.sizeX / 2
         local y = yPos * Grid.sizeY - Grid.sizeY / 2
@@ -135,7 +153,23 @@ function mapHelperFunction(startIndex, endIndex, yPos, playerSpawn)
         else
             type = randomType()
         end
-        spawnATile(x, 5.5, y, type)
+        if xPos == startIndex or xPos == endIndex or index == 12-1 or index == 1 then
+            spawnATile(x,5,y,type,'ragnarok' .. 1)
+        else
+            if xPos+1 == startIndex or xPos-1 == startIndex or xPos+1 == endIndex or xPos-1 == endIndex or index == 11-1 or index == 1+1 then
+                spawnATile(x,5,y,type,'ragnarok' .. 2)
+            else
+                if xPos+2 == startIndex or xPos-2 == startIndex or xPos+2 == endIndex or xPos-2 == endIndex or index == 11-2 or index == 1+2 then
+                    spawnATile(x,5,y,type,'ragnarok' .. 3)
+                else
+                    if xPos+3 == startIndex or xPos-3 == startIndex or xPos+3 == endIndex or xPos-3 == endIndex or index == 11-3 or index == 1+3 then
+                        spawnATile(x,5,y,type,'ragnarok' .. 4)
+                    else
+                        spawnATile(x,5,y,type, '')
+                    end
+                end
+            end
+        end
     end
 end
 
@@ -229,7 +263,7 @@ function spawnInAPlayer(x, y, z, color)
     myGameObjects[#myGameObjects + 1] = tile
 end
 
-function spawnATile(x, y, z, type)
+function spawnATile(x, y, z, type, additionalTags)
     if type then
         local tile = spawnObject({
             type = 'Custom_Tile',
@@ -268,6 +302,7 @@ function spawnATile(x, y, z, type)
             tileType = 4
         end
         tile.addTag('tile')
+        tile.addTag(additionalTags)
         tile.setCustomObject(params)
         myGameObjects[#myGameObjects + 1] = tile
         tileTypeSpawnAmounts[tileType] = tileTypeSpawnAmounts[tileType] + 1
@@ -277,6 +312,15 @@ end
 function onPlayerTurn(previous_player, cur_player)
     if cur_player.color == getSeatedPlayers()[#getSeatedPlayers()] and #playerPawns ~= 0 then
         print('new turn starting')
+        if isRagnarokOn == true then
+            ragnarokTurn = ragnarokTurn + 1
+            if (ragnarokTurn + 2) % everyNturnShrink == 0 and ragnarokTurn < 11 then
+                ragnarokTurnNum = ragnarokTurnNum + 1
+                print('ragnarok turn ' .. ragnarokTurnNum)
+                ragnarokFunc((ragnarokTurn + 2) / 3)
+            end
+        end
+
         for _, player in pairs(playerPawns) do
             player.setVar('myNumberOfVikings', player.getVar('myNumberOfVikings') + player.getVar('addThisTurn'))
             possiblePog = player.editButton({
