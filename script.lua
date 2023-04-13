@@ -154,18 +154,18 @@ function mapHelperFunction(startIndex, endIndex, yPos, playerSpawn, index)
             type = randomType()
         end
         if xPos == startIndex or xPos == endIndex or index == 12-1 or index == 1 then
-            spawnATile(x,5,y,type,'ragnarok' .. 1)
+            spawnATile(x,5,y,type, xPos + 4.5, index, 'ragnarok' .. 1)
         else
             if xPos+1 == startIndex or xPos-1 == startIndex or xPos+1 == endIndex or xPos-1 == endIndex or index == 11-1 or index == 1+1 then
-                spawnATile(x,5,y,type,'ragnarok' .. 2)
+                spawnATile(x,5,y,type, xPos + 4.5, index,'ragnarok' .. 2)
             else
                 if xPos+2 == startIndex or xPos-2 == startIndex or xPos+2 == endIndex or xPos-2 == endIndex or index == 11-2 or index == 1+2 then
-                    spawnATile(x,5,y,type,'ragnarok' .. 3)
+                    spawnATile(x,5,y,type, xPos + 4.5, index,'ragnarok' .. 3)
                 else
                     if xPos+3 == startIndex or xPos-3 == startIndex or xPos+3 == endIndex or xPos-3 == endIndex or index == 11-3 or index == 1+3 then
-                        spawnATile(x,5,y,type,'ragnarok' .. 4)
+                        spawnATile(x,5,y,type, xPos + 4.5, index,'ragnarok' .. 4)
                     else
-                        spawnATile(x,5,y,type, '')
+                        spawnATile(x,5,y,type, xPos + 4.5, index, '')
                     end
                 end
             end
@@ -209,7 +209,6 @@ function spawnInAPlayer(x, y, z, color)
     local tile = spawnObject({
         type = 'Figurine_Custom',
         position = { x, y, z },
-        --scale = {0.9,0.9,1}
     })
     local params = {
         image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' ..
@@ -218,27 +217,42 @@ function spawnInAPlayer(x, y, z, color)
     tile.setCustomObject(params)
 
     tile.setLuaScript([[
-        myNumberOfVikings=3
-        addThisTurn=0
-        giveCombatCard=false
-        giveBlueCard=false
-    ]] .. 'color=' .. color .. ' ' .. [[
+        myNumberOfVikings = 3
+        addThisTurn = 0
+        giveCombatCard = false
+        giveBlueCard = false
+        myCurrentTile = 0
+    ]] .. 'color = ' .. color .. ' ' .. [[
         function onCollisionEnter(info)
             if info.collision_object.getVar('numberOfVikings') then
-                addThisTurn=info.collision_object.getVar('numberOfVikings')
+                addThisTurn = info.collision_object.getVar('numberOfVikings')
                 giveCombatCard = info.collision_object.getVar('giveCombatCard')
                 giveBlueCard = info.collision_object.getVar('giveBlueCard')
+                if myCurrentTile ~= 0 and myCurrentTile.hasTag('shouldFlipThisTurn') then
+                    myCurrentTile.removeTag('shouldFlipThisTurn')
+                end
+                myCurrentTile = info.collision_object
+                if myCurrentTile.hasTag('canFlip') == true then
+                    myCurrentTile.addTag('shouldFlipThisTurn')
+                end
+                print(myCurrentTile.getVar('customX'))
+                print(myCurrentTile.getVar('customY'))
+            else
+                addThisTurn = 0
+                myCurrentTile = 0
+                giveCombatCard = false
+                giveBlueCard = false
             end
         end
 
         function onPickUp(player_color)
-            for _, tile in ipairs(getObjectsWithTag('tile')) do
+            for _, tile in ipairs(getObjectsWithTag('highlightMe')) do
                 tile.highlightOn('White')
             end
         end
 
-        function onDrop( player_color)
-            for _, tile in ipairs(getObjectsWithTag('tile')) do
+        function onDrop(player_color)
+            for _, tile in ipairs(getObjectsWithTag('highlightMe')) do
                 tile.highlightOff('White')
             end
         end
@@ -263,7 +277,7 @@ function spawnInAPlayer(x, y, z, color)
     myGameObjects[#myGameObjects + 1] = tile
 end
 
-function spawnATile(x, y, z, type, additionalTags)
+function spawnATile(x, y, z, type, customX, customY, additionalTags)
     if type then
         local tile = spawnObject({
             type = 'Custom_Tile',
@@ -276,6 +290,9 @@ function spawnATile(x, y, z, type, additionalTags)
         tile.grid_projection = true
         tile.setName(type)
         tile.setVar("numberOfVikings", 0)
+        tile.setVar("movementCost", 1)
+        tile.setVar("customX", customX)
+        tile.setVar("customY", customY)
         tile.setVar("giveCombatCard", false)
         tile.setVar("giveResourceCard", false)
         tile.setVar("spawn", false)
@@ -286,19 +303,39 @@ function spawnATile(x, y, z, type, additionalTags)
             tile.setVar("spawn", true)
         elseif type == 'forest' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/forest.png'
+            --MAGNUS-SENPEI NOTICE ME! KYAAA!
+            params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain.png'
+
             tile.setVar("numberOfVikings", 2)
+            tile.addTag('canFlip')
+            tile.addTag('highlightMe')
             tileType = 3
         elseif type == 'plains' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass.png'
+            --MAGNUS-SENPEI NOTICE ME! KYAAA!
+            params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain.png'
+            
             tile.setVar("numberOfVikings", 1)
+            tile.addTag('canFlip')
+            tile.addTag('highlightMe')
             tileType = 1
         elseif type == 'mountain' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain.png'
+            --MAGNUS-SENPEI NOTICE ME! KYAAA!
+            params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/swamp.png'
+            
             tile.setVar("giveCombatCard", true)
+            tile.addTag('canFlip')
+            tile.addTag('highlightMe')
             tileType = 2
         elseif type == 'swamp' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/swamp.png'
+            --MAGNUS-SENPEI NOTICE ME! KYAAA!
+            params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain.png'
+            
             tile.setVar("giveResourceCard", true)
+            tile.addTag('canFlip')
+            tile.addTag('highlightMe')
             tileType = 4
         end
         tile.addTag('tile')
@@ -332,6 +369,16 @@ function onPlayerTurn(previous_player, cur_player)
             if player.getVar('giveBlueCard') == true then
                 blueDeck.deal(1, player.getVar('color'))
             end
+        end
+        for _, tile in pairs(getObjectsWithTag('shouldFlipThisTurn')) do
+            tile.flip()
+            tile.removeTag("canFlip")
+            tile.removeTag('shouldFlipThisTurn')
+            tile.setName(tile.getName() .. ' (Stepped on)')
+            tile.setVar("numberOfVikings", 0)
+            tile.setVar("giveCombatCard", false)
+            tile.setVar("giveResourceCard", false)
+            print('test worked')
         end
     end
 end
