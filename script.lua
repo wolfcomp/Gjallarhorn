@@ -315,19 +315,6 @@ function spawnInAPlayer(x, y, z, color, index)
                         absIndexMovementCheck = absIndexMovementCheck + 1
                     end
                     tile.highlightOff('White')
-                    for _, localTile4 in ipairs(getObjectsWithTag('checked')) do
-                        localTile4.removeTag('checked')
-                    end
-                    for _, localTile5 in ipairs(getObjectsWithTag(movCostTag)) do
-                        if localTile5.getVar(movCostTag) <= num then
-                            if localTile5.hasTag('highlightCheck') == false then
-                                localTile5.addTag('highlightCheck')
-                                localTile5.setVar('highlighColor', "White")
-                            end
-                        end
-                        localTile5.removeTag(movCostTag)
-                        localTile5.setVar(movCostTag, 1000)
-                    end
             
                     if spawnTileInHere == true then
                         -- local num2 = num - lowestSpawnTileCost
@@ -435,6 +422,7 @@ function spawnInAPlayer(x, y, z, color, index)
                 for _, tile in ipairs(getObjectsWithTag('player' .. myIndex .. 'LowestMovCost')) do
                     tile.removeTag('player' .. myIndex .. 'LowestMovCost')
                 end
+                self.highlightOff('Red')
             end
     ]])
 
@@ -539,16 +527,14 @@ function onPlayerTurn(previous_player, cur_player)
                 ragnarokTurnNum = ragnarokTurnNum + 1
                 print('ragnarok turn ' .. ragnarokTurnNum)
                 ragnarokFunc(ragnarokTurnNum)
-            end
-            if (ragnarokTurn + 1) % everyNturnShrink == 0 and ragnarokTurn < 11 then
-                for _, player in pairs(getObjectsWithTag('playerPawn')) do
-                    if player.getVar(myCurrentTile) != nil then
-                        if player.getVar(myCurrentTile).hasTag(('ragnarok' .. ragnarokTurnNum + 1)) == true
-                            player.highlightOn('Red')
+                for _, playerPawn in pairs(getObjectsWithTag('playerPawn')) do
+                    if playerPawn.getVar('myCurrentTile') ~= nil and playerPawn.getVar('myCurrentTile') ~= 0 then
+                        playerTile = playerPawn.getVar('myCurrentTile')
+                        if playerTile.hasTag('ragnarok'.. ragnarokTurnNum + 1) == true then
+                            playerPawn.highlightOn('Red')
                         end
                     end
                 end
-                --print('testin my way down town')
             end
         end
 
