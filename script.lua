@@ -434,7 +434,7 @@ end
     player.setVar('playerColor', color)
 
     local textButtonParams = {
-        click_function = 'notAfunc',
+        click_function = 'printVikings',
         function_owner = self,
         label          = vikings,
         position       = { 0, 3, 0 },
@@ -450,6 +450,10 @@ end
     player.createButton(textButtonParams)
     player.addTag('gameObject')
     player.addTag('playerPawn')
+end
+
+function printVikings(obj, color, alt_click)
+    print('player ' .. color .. ' has ' .. obj.getVar('myNumberOfVikings') .. ' vikings')
 end
 
 function spawnATile(x, y, z, type, customX, customY, additionalTags)
