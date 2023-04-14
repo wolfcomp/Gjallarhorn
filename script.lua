@@ -40,6 +40,12 @@ function StartRagnarok2()
     end 
 end
 
+function ragnarokFunc(i)
+    for _, object in ipairs(getObjectsWithTag('ragnarok'..i)) do
+        destroyObject(object)
+    end
+end
+
 -- https://stackoverflow.com/questions/5977654/how-do-i-use-the-bitwise-operator-xor-in-lua
 
 local function BitXOR(a, b) --Bitwise xor
@@ -532,10 +538,17 @@ function onPlayerTurn(previous_player, cur_player)
             if (ragnarokTurn + 2) % everyNturnShrink == 0 and ragnarokTurn < 11 then
                 ragnarokTurnNum = ragnarokTurnNum + 1
                 print('ragnarok turn ' .. ragnarokTurnNum)
-                ragnarokFunc((ragnarokTurn + 2) / 3)
+                ragnarokFunc(ragnarokTurnNum)
             end
-            if (ragnarokTurn + 3) % everyNturnShrink == 0 and ragnarokTurn < 11 then
-                print('testin my way down town')
+            if (ragnarokTurn + 1) % everyNturnShrink == 0 and ragnarokTurn < 11 then
+                for _, player in pairs(getObjectsWithTag('playerPawn')) do
+                    if player.getVar(myCurrentTile) != nil then
+                        if player.getVar(myCurrentTile).hasTag(('ragnarok' .. ragnarokTurnNum + 1)) == true
+                            player.highlightOn('Red')
+                        end
+                    end
+                end
+                --print('testin my way down town')
             end
         end
 
