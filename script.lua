@@ -28,16 +28,31 @@ function StartRagnarok2()
     print('starting Ragnarok!')
     isRagnarokOn = true
     for _, player in ipairs(getObjectsWithTag('playerPawn')) do
-        local testPoggersDoNotStealOriginalOC = player.getVar('myNumberOfVikings') / 2
-        if testPoggersDoNotStealOriginalOC == math.floor(testPoggersDoNotStealOriginalOC) then
-            player.setVar('myNumberOfVikings', testPoggersDoNotStealOriginalOC)
-        else
-            player.setVar('myNumberOfVikings', math.floor(testPoggersDoNotStealOriginalOC)+1)
-        end
-        possiblePog = player.editButton({
-            index = 0, label = player.getVar('myNumberOfVikings')
-        })
+        local vikings = math.ceil(player.getVar('myNumberOfVikings') / 2)
+        local position = player.getPosition()
+        local color = player.getVar('playerColor')
+        local index = player.getVar('playerIndex')
+        player.destruct()
+        spawnInAPlayer(position.x, position.y, position.z, color, index, vikings)
     end 
+end
+
+function setPlayerImage(player, color, vikings)
+    local v = vikings - 3
+    local params = {
+        image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/'
+    }
+    if v >= 9 then
+        params.image = params.image .. 'boat/'
+    elseif v >= 6 then
+        params.image = params.image .. 'goat/'
+    elseif v >= 3 then
+        params.image = params.image .. 'war/'
+    else
+        params.image = params.image .. 'norm/'
+    end
+    params.image = params.image .. string.lower(color) .. '.png'
+    player.setCustomObject(params)
 end
 
 function ragnarokFunc(i)
@@ -132,7 +147,8 @@ function spawnGame()
             player.getHandTransform().position.y,
             player.getHandTransform().position.z,
             player.color,
-            spawnPlayerIndex
+            spawnPlayerIndex,
+            3
         )
         spawnPlayerIndex = spawnPlayerIndex + 1
     end
@@ -174,21 +190,15 @@ function mapHelperFunction(startIndex, endIndex, yPos, playerSpawn, index)
             type = randomType()
         end
         if xPos == startIndex or xPos == endIndex or index == 12-1 or index == 1 then
-            spawnATile(x,5,y,type, xPos + 4.5, index, 'ragnarok' .. 1)
+            spawnATile(x,5.25,y,type, xPos + 4.5, index, 'ragnarok' .. 1)
+        elseif xPos+1 == startIndex or xPos-1 == startIndex or xPos+1 == endIndex or xPos-1 == endIndex or index == 11-1 or index == 1+1 then
+            spawnATile(x,5.25,y,type, xPos + 4.5, index,'ragnarok' .. 2)
+        elseif xPos+2 == startIndex or xPos-2 == startIndex or xPos+2 == endIndex or xPos-2 == endIndex or index == 11-2 or index == 1+2 then
+            spawnATile(x,5.25,y,type, xPos + 4.5, index,'ragnarok' .. 3)
+        elseif xPos+3 == startIndex or xPos-3 == startIndex or xPos+3 == endIndex or xPos-3 == endIndex or index == 11-3 or index == 1+3 then
+            spawnATile(x,5.25,y,type, xPos + 4.5, index,'ragnarok' .. 4)
         else
-            if xPos+1 == startIndex or xPos-1 == startIndex or xPos+1 == endIndex or xPos-1 == endIndex or index == 11-1 or index == 1+1 then
-                spawnATile(x,5,y,type, xPos + 4.5, index,'ragnarok' .. 2)
-            else
-                if xPos+2 == startIndex or xPos-2 == startIndex or xPos+2 == endIndex or xPos-2 == endIndex or index == 11-2 or index == 1+2 then
-                    spawnATile(x,5,y,type, xPos + 4.5, index,'ragnarok' .. 3)
-                else
-                    if xPos+3 == startIndex or xPos-3 == startIndex or xPos+3 == endIndex or xPos-3 == endIndex or index == 11-3 or index == 1+3 then
-                        spawnATile(x,5,y,type, xPos + 4.5, index,'ragnarok' .. 4)
-                    else
-                        spawnATile(x,5,y,type, xPos + 4.5, index, '')
-                    end
-                end
-            end
+            spawnATile(x,5.25,y,type, xPos + 4.5, index, '')
         end
     end
 end
@@ -225,211 +235,208 @@ function randomType()
     return returnVar
 end
 
-function spawnInAPlayer(x, y, z, color, index)
+function spawnInAPlayer(x, y, z, color, index, vikings)
     local player = spawnObject({
         type = 'Figurine_Custom',
         position = { x, y, z },
     })
-    local params = {
-        image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' ..
-            string.lower(color) .. '.png'
-    }
-    player.setCustomObject(params)
+    setPlayerImage(player, color, vikings)
     
     player.setLuaScript([[
-        myNumberOfVikings = 3
+myNumberOfVikings = ]] .. vikings .. [[
+
+addThisTurn = 0
+giveCombatCard = false
+giveBlueCard = false
+myCurrentTile = 0
+playerIndex = ]] .. index .. [[
+
+function onCollisionEnter(info)
+    if info.collision_object.getVar('numberOfVikings') then
+        addThisTurn = info.collision_object.getVar('numberOfVikings')
+        giveCombatCard = info.collision_object.getVar('giveCombatCard')
+        giveBlueCard = info.collision_object.getVar('giveBlueCard')
+        if myCurrentTile ~= 0 and myCurrentTile.hasTag('shouldFlipThisTurn') then
+            myCurrentTile.removeTag('shouldFlipThisTurn')
+        end
+        myCurrentTile = info.collision_object
+
+        if myCurrentTile.hasTag('canFlip') == true then
+            myCurrentTile.addTag('shouldFlipThisTurn')
+        end
+    else
         addThisTurn = 0
+        myCurrentTile = 0
         giveCombatCard = false
         giveBlueCard = false
-        myCurrentTile = 0
-        myIndex = ]] .. index .. [[
+    end
+end
+function MovementCheck(tile, playerNum, num)
+    local surroundingTilesMovement = { tile }
+    local movCostTag = 'player' .. playerNum .. 'LowestMovCost'
+    local spawnTileInHere = tile.hasTag('playerSpawnTile')
+    local lowestSpawnTileCost = 200
+    if spawnTileInHere == true then
+        lowestSpawnTileCost = 0
+    end
+    tile.setVar(movCostTag, 0)
 
-        ]]
-        .. 'color = ' .. color .. ' ' .. [[
-            function onCollisionEnter(info)
-                if info.collision_object.getVar('numberOfVikings') then
-                    addThisTurn = info.collision_object.getVar('numberOfVikings')
-                    giveCombatCard = info.collision_object.getVar('giveCombatCard')
-                    giveBlueCard = info.collision_object.getVar('giveBlueCard')
-                    if myCurrentTile ~= 0 and myCurrentTile.hasTag('shouldFlipThisTurn') then
-                        myCurrentTile.removeTag('shouldFlipThisTurn')
-                    end
-                    myCurrentTile = info.collision_object
+    if num > 0 then
+        local absIndexMovementCheck = 0
+        while(#surroundingTilesMovement > 0 and absIndexMovementCheck < 200)
+        do
             
-                    if myCurrentTile.hasTag('canFlip') == true then
-                        myCurrentTile.addTag('shouldFlipThisTurn')
-                    end
-                else
-                    addThisTurn = 0
-                    myCurrentTile = 0
-                    giveCombatCard = false
-                    giveBlueCard = false
-                end
+            local localTileMovement = surroundingTilesMovement[#surroundingTilesMovement]
+            local x = localTileMovement.getVar('customX')
+            local y = localTileMovement.getVar('customY')
+            local currentMovCost = localTileMovement.getVar(movCostTag)
+
+            if localTileMovement.hasTag('playerSpawnTile') == true  and localTileMovement.hasTag(movCostTag) == true and localTileMovement.getVar(movCostTag) < lowestSpawnTileCost and localTileMovement.getVar(movCostTag) <= num then
+                lowestSpawnTileCost = currentMovCost
+                spawnTileInHere = true
             end
-            function MovementCheck(tile, playerNum, num)
-                local surroundingTilesMovement = { tile }
-                local movCostTag = 'player' .. playerNum .. 'LowestMovCost'
-                local spawnTileInHere = tile.hasTag('playerSpawnTile')
-                local lowestSpawnTileCost = 200
-                if spawnTileInHere == true then
-                    lowestSpawnTileCost = 0
-                end
-                tile.setVar(movCostTag, 0)
-            
-                if num > 0 then
-                    local absIndexMovementCheck = 0
-                    while(#surroundingTilesMovement > 0 and absIndexMovementCheck < 200)
-                    do
-                        
-                        local localTileMovement = surroundingTilesMovement[#surroundingTilesMovement]
-                        local x = localTileMovement.getVar('customX')
-                        local y = localTileMovement.getVar('customY')
-                        local currentMovCost = localTileMovement.getVar(movCostTag)
-            
-                        if localTileMovement.hasTag('playerSpawnTile') == true  and localTileMovement.hasTag(movCostTag) == true and localTileMovement.getVar(movCostTag) < lowestSpawnTileCost and localTileMovement.getVar(movCostTag) <= num then
-                            lowestSpawnTileCost = currentMovCost
-                            spawnTileInHere = true
-                        end
-            
-                        if math.abs(x - tile.getVar('customX')) <= num and math.abs(y - tile.getVar('customY')) <= num and localTileMovement.hasTag('checked') == false then
-                            for _, localTile2 in ipairs(checkHelper(localTileMovement)) do
-                                if math.abs(localTile2.getVar('customX') - tile.getVar('customX')) <= num and math.abs(localTile2.getVar('customY') - tile.getVar('customY')) <= num and localTile2.hasTag('checked') == false then
-                                    if localTile2.hasTag(movCostTag) == true then
-                                        if localTileMovement.getVar(movCostTag) + localTile2.getVar('movementCost') < localTile2.getVar(movCostTag) then
-                                            localTile2.setVar(movCostTag, localTileMovement.getVar(movCostTag) + localTile2.getVar('movementCost'))
-                                            for _, localTile3 in ipairs(checkHelper(localTile2)) do
-                                                table.insert(surroundingTilesMovement, 1, localTile3)
-                                            end
-                                        end
-                                    else
-                                        localTile2.addTag(movCostTag)
-                                        localTile2.setVar(movCostTag, localTileMovement.getVar(movCostTag) + localTile2.getVar('movementCost'))
-                                        table.insert(surroundingTilesMovement, 1, localTile2)
-                                    end
+
+            if math.abs(x - tile.getVar('customX')) <= num and math.abs(y - tile.getVar('customY')) <= num and localTileMovement.hasTag('checked') == false then
+                for _, localTile2 in ipairs(checkHelper(localTileMovement)) do
+                    if math.abs(localTile2.getVar('customX') - tile.getVar('customX')) <= num and math.abs(localTile2.getVar('customY') - tile.getVar('customY')) <= num and localTile2.hasTag('checked') == false then
+                        if localTile2.hasTag(movCostTag) == true then
+                            if localTileMovement.getVar(movCostTag) + localTile2.getVar('movementCost') < localTile2.getVar(movCostTag) then
+                                localTile2.setVar(movCostTag, localTileMovement.getVar(movCostTag) + localTile2.getVar('movementCost'))
+                                for _, localTile3 in ipairs(checkHelper(localTile2)) do
+                                    table.insert(surroundingTilesMovement, 1, localTile3)
                                 end
                             end
+                        else
+                            localTile2.addTag(movCostTag)
+                            localTile2.setVar(movCostTag, localTileMovement.getVar(movCostTag) + localTile2.getVar('movementCost'))
+                            table.insert(surroundingTilesMovement, 1, localTile2)
                         end
-                
-                        localTileMovement.addTag('checked')
-                        table.remove(surroundingTilesMovement)
-                        absIndexMovementCheck = absIndexMovementCheck + 1
                     end
-                    tile.highlightOff('White')
-            
-                    if spawnTileInHere == true then
-                        -- local num2 = num - lowestSpawnTileCost
-                        -- if num2 > 0 then 
-                        --     for _, localSpawnTile in ipairs(getObjectsWithTag('playerSpawnTile')) do
-                        --         localSpawnTile.addTag('highlightCheck')
-                        --         localSpawnTile.setVar('highlighColor', "Green")
-                
-                        --         local spawnLocalTilesINeedToCheck = { localSpawnTile }
-                        --         localSpawnTile.setVar(movCostTag, 0)
-                        --         while(#spawnLocalTilesINeedToCheck > 0 and absIndexMovementCheck < 150)
-                        --         do
-                                    
-                        --             local localTileMovement = spawnLocalTilesINeedToCheck[#spawnLocalTilesINeedToCheck]
-                        --             local x = localTileMovement.getVar('customX')
-                        --             local y = localTileMovement.getVar('customY')
-                        --             local currentMovCost = localTileMovement.getVar(movCostTag)+1
-                
-                        --             if math.abs(x - localSpawnTile.getVar('customX')) <= num2 and math.abs(y - localSpawnTile.getVar('customY')) <= num2 and localTileMovement.hasTag('checked') == false then
-                        --                 for _, localTile2 in ipairs(checkHelper(localTileMovement)) do
-                        --                     if math.abs(localTile2.getVar('customX') - localSpawnTile.getVar('customX')) <= num2 and math.abs(localTile2.getVar('customY') - localSpawnTile.getVar('customY')) <= num2 and localTile2.hasTag('checked') == false then
-                        --                         if localTile2.hasTag(movCostTag) == true and localTile2.getVar('movementCost') < num2 then
-                        --                             if currentMovCost + localTile2.getVar('movementCost') < localTile2.getVar(movCostTag) then
-                        --                                 localTile2.setVar(movCostTag, currentMovCost + localTile2.getVar('movementCost'))
-                        --                                 for _, localTile3 in ipairs(checkHelper(localTile2)) do
-                        --                                     table.insert(spawnLocalTilesINeedToCheck, 1, localTile3)
-                        --                                 end
-                        --                             end
-                        --                         else
-                        --                             localTile2.addTag(movCostTag)
-                        --                             localTile2.setVar(movCostTag, currentMovCost + localTile2.getVar('movementCost'))
-                        --                             table.insert(spawnLocalTilesINeedToCheck, 1, localTile2)
-                        --                         end
-                        --                     end
-                        --                 end
-                        --             end
-                            
-                        --             localTileMovement.addTag('checked')
-                        --             table.remove(spawnLocalTilesINeedToCheck)
-                        --             absIndexMovementCheck = absIndexMovementCheck + 1
-                        --         end
-                
-                
-                
+                end
+            end
+    
+            localTileMovement.addTag('checked')
+            table.remove(surroundingTilesMovement)
+            absIndexMovementCheck = absIndexMovementCheck + 1
+        end
+        tile.highlightOff('White')
 
-                        --         for _, spawnLocalTile2 in ipairs(spawnLocalTilesINeedToCheck) do
-                        --             spawnLocalTile2.addTag('highlightCheck')
-                        --             spawnLocalTile2.setVar('highlighColor', "White")
-                        --             localSpawnTile.highlightOn('Green')
-                        --         end
-                        --     end
-                        -- else
-                        for _, localTile4 in ipairs(getObjectsWithTag('playerSpawnTile')) do
-                            localTile4.addTag('highlightCheck')
-                            localTile4.setVar('highlighColor', 'Green')
-                        end
-                    end
-                    for _, localTile4 in ipairs(getObjectsWithTag('checked')) do
-                        localTile4.removeTag('checked')
-                    end
-                    for _, localTile5 in ipairs(getObjectsWithTag(movCostTag)) do
-                        if localTile5.getVar(movCostTag) <= num then
-                            if localTile5.hasTag('highlightCheck') == false then
-                                localTile5.addTag('highlightCheck')
-                                localTile5.setVar('highlighColor', "White")
-                            end
-                        end
-                        localTile5.removeTag(movCostTag)
-                        localTile5.setVar(movCostTag, 1000)
-                    end
-                    for _, localTile6 in ipairs(getObjectsWithTag('highlightCheck')) do
-                        localTile6.highlightOn(localTile6.getVar('highlighColor'))
-                        localTile6.removeTag('highlightCheck')
-                    end
+        if spawnTileInHere == true then
+            -- local num2 = num - lowestSpawnTileCost
+            -- if num2 > 0 then 
+            --     for _, localSpawnTile in ipairs(getObjectsWithTag('playerSpawnTile')) do
+            --         localSpawnTile.addTag('highlightCheck')
+            --         localSpawnTile.setVar('highlighColor', "Green")
+    
+            --         local spawnLocalTilesINeedToCheck = { localSpawnTile }
+            --         localSpawnTile.setVar(movCostTag, 0)
+            --         while(#spawnLocalTilesINeedToCheck > 0 and absIndexMovementCheck < 150)
+            --         do
+                        
+            --             local localTileMovement = spawnLocalTilesINeedToCheck[#spawnLocalTilesINeedToCheck]
+            --             local x = localTileMovement.getVar('customX')
+            --             local y = localTileMovement.getVar('customY')
+            --             local currentMovCost = localTileMovement.getVar(movCostTag)+1
+    
+            --             if math.abs(x - localSpawnTile.getVar('customX')) <= num2 and math.abs(y - localSpawnTile.getVar('customY')) <= num2 and localTileMovement.hasTag('checked') == false then
+            --                 for _, localTile2 in ipairs(checkHelper(localTileMovement)) do
+            --                     if math.abs(localTile2.getVar('customX') - localSpawnTile.getVar('customX')) <= num2 and math.abs(localTile2.getVar('customY') - localSpawnTile.getVar('customY')) <= num2 and localTile2.hasTag('checked') == false then
+            --                         if localTile2.hasTag(movCostTag) == true and localTile2.getVar('movementCost') < num2 then
+            --                             if currentMovCost + localTile2.getVar('movementCost') < localTile2.getVar(movCostTag) then
+            --                                 localTile2.setVar(movCostTag, currentMovCost + localTile2.getVar('movementCost'))
+            --                                 for _, localTile3 in ipairs(checkHelper(localTile2)) do
+            --                                     table.insert(spawnLocalTilesINeedToCheck, 1, localTile3)
+            --                                 end
+            --                             end
+            --                         else
+            --                             localTile2.addTag(movCostTag)
+            --                             localTile2.setVar(movCostTag, currentMovCost + localTile2.getVar('movementCost'))
+            --                             table.insert(spawnLocalTilesINeedToCheck, 1, localTile2)
+            --                         end
+            --                     end
+            --                 end
+            --             end
+                
+            --             localTileMovement.addTag('checked')
+            --             table.remove(spawnLocalTilesINeedToCheck)
+            --             absIndexMovementCheck = absIndexMovementCheck + 1
+            --         end
+    
+    
+    
+
+            --         for _, spawnLocalTile2 in ipairs(spawnLocalTilesINeedToCheck) do
+            --             spawnLocalTile2.addTag('highlightCheck')
+            --             spawnLocalTile2.setVar('highlighColor', "White")
+            --             localSpawnTile.highlightOn('Green')
+            --         end
+            --     end
+            -- else
+            for _, localTile4 in ipairs(getObjectsWithTag('playerSpawnTile')) do
+                localTile4.addTag('highlightCheck')
+                localTile4.setVar('highlighColor', 'Green')
+            end
+        end
+        for _, localTile4 in ipairs(getObjectsWithTag('checked')) do
+            localTile4.removeTag('checked')
+        end
+        for _, localTile5 in ipairs(getObjectsWithTag(movCostTag)) do
+            if localTile5.getVar(movCostTag) <= num then
+                if localTile5.hasTag('highlightCheck') == false then
+                    localTile5.addTag('highlightCheck')
+                    localTile5.setVar('highlighColor', "White")
                 end
             end
-            function checkHelper(tile)
-                local surroundingTilesCheckHelper = {}
-                local orgXCheckHelper = tile.getVar('customX')
-                local orgYCheckHelper = tile.getVar('customY')
-                for _, checkHelperLocalTile in ipairs(getObjectsWithTag('tile')) do
-                    local xCheckHelper = checkHelperLocalTile.getVar('customX')
-                    local yCheckHelper = checkHelperLocalTile.getVar('customY')
-                    if math.abs(xCheckHelper - orgXCheckHelper) < 1 or math.abs(yCheckHelper - orgYCheckHelper) < 1 then
-                        if math.abs(xCheckHelper - orgXCheckHelper) < 2 and math.abs(yCheckHelper - orgYCheckHelper) < 2 then
-                            if checkHelperLocalTile ~= tile then
-                                surroundingTilesCheckHelper[#surroundingTilesCheckHelper + 1] = checkHelperLocalTile
-                            end
-                        end
-                    end
+            localTile5.removeTag(movCostTag)
+            localTile5.setVar(movCostTag, 1000)
+        end
+        for _, localTile6 in ipairs(getObjectsWithTag('highlightCheck')) do
+            localTile6.highlightOn(localTile6.getVar('highlighColor'))
+            localTile6.removeTag('highlightCheck')
+        end
+    end
+end
+function checkHelper(tile)
+    local surroundingTilesCheckHelper = {}
+    local orgXCheckHelper = tile.getVar('customX')
+    local orgYCheckHelper = tile.getVar('customY')
+    for _, checkHelperLocalTile in ipairs(getObjectsWithTag('tile')) do
+        local xCheckHelper = checkHelperLocalTile.getVar('customX')
+        local yCheckHelper = checkHelperLocalTile.getVar('customY')
+        if math.abs(xCheckHelper - orgXCheckHelper) < 1 or math.abs(yCheckHelper - orgYCheckHelper) < 1 then
+            if math.abs(xCheckHelper - orgXCheckHelper) < 2 and math.abs(yCheckHelper - orgYCheckHelper) < 2 then
+                if checkHelperLocalTile ~= tile then
+                    surroundingTilesCheckHelper[#surroundingTilesCheckHelper + 1] = checkHelperLocalTile
                 end
-                return surroundingTilesCheckHelper
             end
-            
-            function onPickUp(player_color)
-                if myCurrentTile ~= 0 then
-                    MovementCheck(myCurrentTile, 1, 3)
-                end
-            end
-            
-            function onDrop(player_color)
-                for _, tile in ipairs(getObjectsWithTag('tile')) do
-                    tile.highlightOff('White')
-                end
-                for _, tile in ipairs(getObjectsWithTag('player' .. myIndex .. 'LowestMovCost')) do
-                    tile.removeTag('player' .. myIndex .. 'LowestMovCost')
-                end
-                self.highlightOff('Red')
-            end
+        end
+    end
+    return surroundingTilesCheckHelper
+end
+
+function onPickUp(player_color)
+    if myCurrentTile ~= 0 then
+        MovementCheck(myCurrentTile, 1, 3)
+    end
+end
+
+function onDrop(player_color)
+    for _, tile in ipairs(getObjectsWithTag('tile')) do
+        tile.highlightOff('White')
+    end
+    for _, tile in ipairs(getObjectsWithTag('player' .. playerIndex .. 'LowestMovCost')) do
+        tile.removeTag('player' .. playerIndex .. 'LowestMovCost')
+    end
+    self.highlightOff('Red')
+end
     ]])
+
+    player.setVar('playerColor', color)
 
     local textButtonParams = {
         click_function = 'notAfunc',
         function_owner = self,
-        label          = '3',
+        label          = vikings,
         position       = { 0, 3, 0 },
         rotation       = { 90, 180, 0 },
         width          = 800,
@@ -450,7 +457,7 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
         local tile = spawnObject({
             type = 'Custom_Tile',
             position = { x, y, z },
-            scale = { Grid.sizeX / 2, Grid.sizeX / 2, Grid.sizeX / 2 }
+            scale = { Grid.sizeX / 2 - 0.005, Grid.sizeX / 2 - 0.005, Grid.sizeX / 2 - 0.005 }
         })
         local params = { image = '', image_bottom = '' }
         local tileType = 0
@@ -473,24 +480,21 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
             tile.addTag('playerSpawnTile')
         elseif type == 'forest' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/forest.png'
-            --MAGNUS-SENPEI NOTICE ME! KYAAA!
-            params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain.png'
+            params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/forest_used.png'
 
             tile.setVar("numberOfVikings", 2)
             tile.addTag('canFlip')
             tileType = 3
         elseif type == 'plains' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass.png'
-            --MAGNUS-SENPEI NOTICE ME! KYAAA!
-            params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain.png'
+            params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass_used.png'
             
             tile.setVar("numberOfVikings", 1)
             tile.addTag('canFlip')
             tileType = 1
         elseif type == 'mountain' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain.png'
-            --MAGNUS-SENPEI NOTICE ME! KYAAA!
-            params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/swamp.png'
+            params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain_used.png'
             
             tile.setVar("giveCombatCard", true)
             tile.setVar("movementCost", 3)
@@ -498,8 +502,7 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
             tileType = 2
         elseif type == 'swamp' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/swamp.png'
-            --MAGNUS-SENPEI NOTICE ME! KYAAA!
-            params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain.png'
+            params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/swamp_used.png'
             
             tile.setVar("giveResourceCard", true)
             tile.setVar("movementCost", 3)
@@ -510,6 +513,7 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
         tile.addTag(additionalTags)
         tile.setCustomObject(params)
         tile.addTag('gameObject')
+        tile.setLock(true)
         tileTypeSpawnAmounts[tileType] = tileTypeSpawnAmounts[tileType] + 1
     end
 end
@@ -539,19 +543,25 @@ function onPlayerTurn(previous_player, cur_player)
         end
 
         for _, player in pairs(getObjectsWithTag('playerPawn')) do
-            player.setVar('myNumberOfVikings', player.getVar('myNumberOfVikings') + player.getVar('addThisTurn'))
-            possiblePog = player.editButton({
-                index = 0, label = player.getVar('myNumberOfVikings')
-            })
+            local vikings = player.getVar('myNumberOfVikings') + player.getVar('addThisTurn')
+            local position = player.getPosition()
+            local color = player.getVar('playerColor')
+            local index = player.getVar('playerIndex')
             if player.getVar('giveCombatCard') == true then
-                myCombatDeck.deal(1, player.getVar('color'))
+                myCombatDeck.deal(1, player.getVar('playerColor'))
             end
             if player.getVar('giveBlueCard') == true then
-                blueDeck.deal(1, player.getVar('color'))
+                blueDeck.deal(1, player.getVar('playerColor'))
             end
+            player.destruct()
+            spawnInAPlayer(position.x, position.y, position.z, color, index, vikings)
         end
         for _, tile in pairs(getObjectsWithTag('shouldFlipThisTurn')) do
+            local position = tile.getPosition()
+            tile.setLock(false)
             tile.flip()
+            tile.setLock(true)
+            tile.setPosition(position)
             tile.removeTag("canFlip")
             tile.removeTag('shouldFlipThisTurn')
             tile.setName(tile.getName() .. ' (Stepped on)')
