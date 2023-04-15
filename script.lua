@@ -1,3 +1,6 @@
+
+Hands.hiding = 1
+
 local colors = { "Red", "White", "Orange", "Pink", "Yellow", "Purple", "Green", "Blue" }
 local myCombatDeck = 1
 local blueDeck = 1
@@ -15,12 +18,24 @@ local RagnarokDefStartTurn = 5
 
 local turnNum = 0
 
-function subtractAViking(player)
-
+function updateVikingCount(player)
+    possiblePog = player.editButton({
+        index = 0, label = player.getVar('myNumberOfVikings')
+    })
 end
 
-function addAViking(player)
+function subtractAViking(object, player_color)
+    --print(player_color)
+    --print(object)
+    object.setVar('myNumberOfVikings', object.getVar('myNumberOfVikings') - 1)
+    updateVikingCount(object)
+end
 
+function addAViking(object, player_color)
+    --print(player_color)
+    --print(object)
+    object.setVar('myNumberOfVikings', object.getVar('myNumberOfVikings') + 1)
+    updateVikingCount(object)
 end
 
 function forfeitTile(player)
@@ -52,9 +67,7 @@ function StartRagnarok2()
             else
                 player.setVar('myNumberOfVikings', math.floor(testPoggersDoNotStealOriginalOC)+1)
             end
-            possiblePog = player.editButton({
-                index = 0, label = player.getVar('myNumberOfVikings')
-            })
+            updateVikingCount(player)
         end
     end
 end
@@ -162,9 +175,11 @@ function spawnGame()
     end
     
     --spawn decks
+    deckScale = 1.75
     myCombatDeck = spawnObject({
         type = 'DeckCustom',
-        position = { 10, 10, 0 },
+        position = { 16, 5, 12 },
+        scale = { deckScale, deckScale, deckScale}
     })
     combatDeckParams ={
         face = 'C:/temp Tabletop Files/CombatCardCollection.png', back = 'C:/temp Tabletop Files/card backside_Combat.png',
@@ -172,25 +187,34 @@ function spawnGame()
         height = 3,
         number = 6
     }
-    myCombatDeck.setCustomObject(combatDeckParams)
-
     myCombatDeck.use_hands = true
+    myCombatDeck.hide_when_face_down = true
+    myCombatDeck.use_snap_points = false
+    myCombatDeck.setCustomObject(combatDeckParams)
+    myCombatDeck.setRotation({0,45-90,0})
+    myCombatDeck.setName('Combat Cards')
     myCombatDeck.addTag('gameObject')
-
+    myCombatDeck.flip()
 
     blueDeck = spawnObject({
         type = 'DeckCustom',
-        position = { -10, 10, 0 },
+        position = { -12, 5, -16 },
+        scale = { deckScale, deckScale, deckScale}
     })
     blueDeckParams ={
         face = 'C:/temp Tabletop Files/ResourceCardCollection2.png', back = 'C:/temp Tabletop Files/card backside_Resources.png',
         width = 3,
         height = 3,
-        number = 7
+        number = 7,
     }
-    blueDeck.setCustomObject(blueDeckParams)
     blueDeck.use_hands = true
+    blueDeck.hide_when_face_down = true
+    blueDeck.use_snap_points = false
+    blueDeck.setCustomObject(blueDeckParams)
+    blueDeck.setRotation({0,45-90,0})
+    blueDeck.setName('Resource Cards')
     blueDeck.addTag('gameObject')
+    blueDeck.flip()
 end
 
 function destroyAllObjects()
@@ -199,6 +223,11 @@ function destroyAllObjects()
     end
     tileTypeSpawnAmounts = { 0, 0, 0, 0, 0 }
     numberSpawned = 0
+    for _, player in ipairs(Player.getPlayers()) do
+        for _, obj in ipairs(player.getHandObjects(1)) do
+            destroyObject(obj)
+        end
+    end
 end
 
 function mapHelperFunction(startIndex, endIndex, yPos, playerSpawn, index)
@@ -497,7 +526,64 @@ function spawnInAPlayer(x, y, z, color, index)
         font_color     = { 1, 1, 1 },
         tooltip        = 'number of vikings',
     }
+    local textButtonParams2 = {
+        click_function = 'subtractAViking',
+        function_owner = self,
+        label          = '--',
+        position       = { -2.5, 1, 0 },
+        rotation       = { 90, 0, 0 },
+        width          = 800,
+        height         = 400,
+        font_size      = 340,
+        color          = { 0.5, 0.5, 0.5 },
+        font_color     = { 1, 1, 1 },
+        tooltip        = 'Subtract A Viking',
+    }
+    local textButtonParams3 = {
+        click_function = 'addAViking',
+        function_owner = self,
+        label          = '++',
+        position       = { -2.5, 2, 0 },
+        rotation       = { 90, 0, 0 },
+        width          = 800,
+        height         = 400,
+        font_size      = 340,
+        color          = { 0.5, 0.5, 0.5 },
+        font_color     = { 1, 1, 1 },
+        tooltip        = 'Add A Viking',
+    }
+    local textButtonParams4 = {
+        click_function = 'subtractAViking',
+        function_owner = self,
+        label          = '--',
+        position       = { -2.5, 1, 0 },
+        rotation       = { -90, 0, 0 },
+        width          = 800,
+        height         = 400,
+        font_size      = 340,
+        color          = { 0.5, 0.5, 0.5 },
+        font_color     = { 1, 1, 1 },
+        tooltip        = 'Subtract A Viking',
+    }
+    local textButtonParams5 = {
+        click_function = 'addAViking',
+        function_owner = self,
+        label          = '++',
+        position       = { -2.5, 2, 0 },
+        rotation       = { -90, 0, 0 },
+        width          = 800,
+        height         = 400,
+        font_size      = 340,
+        color          = { 0.5, 0.5, 0.5 },
+        font_color     = { 1, 1, 1 },
+        tooltip        = 'Add A Viking',
+    }
+
     player.createButton(textButtonParams)
+    player.createButton(textButtonParams2)
+    player.createButton(textButtonParams3)
+    player.createButton(textButtonParams4)
+    player.createButton(textButtonParams5)
     player.addTag('gameObject')
     player.addTag('playerPawn')
 end
@@ -601,9 +687,7 @@ function onPlayerTurn(previous_player, cur_player)
         for _, player in pairs(getObjectsWithTag('playerPawn')) do
             player.setVar('myNumberOfVikings', player.getVar('myNumberOfVikings') + player.getVar('addThisTurn'))
             player.setVar('myTileThisTurn', player.getVar('myCurrentTile'))
-            possiblePog = player.editButton({
-                index = 0, label = player.getVar('myNumberOfVikings')
-            })
+            updateVikingCount(player)
             if player.getVar('giveCombatCard') == true then
                 myCombatDeck.deal(1, player.getVar('color'))
             end
@@ -624,4 +708,7 @@ function onPlayerTurn(previous_player, cur_player)
             tile.setVar("giveResourceCard", false)
         end
     end
+end
+function notAfunc()
+
 end
