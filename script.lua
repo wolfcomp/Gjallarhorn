@@ -3,8 +3,9 @@ local colors = { "Red", "White", "Orange", "Pink", "Yellow", "Purple", "Green", 
 --local playerPawns = {}
 --availableTileTypes = {'plains', 'forest','mountain', 'swamp'}
 local myCombatDeck = 1
-
 local blueDeck = 1
+local dice = 1
+
 local mapAmounts = { 5, 7, 9, 11, 11, 11, 11, 11, 9, 7, 5 }
 local tileTypeSpawnAmounts = { 0, 0, 0, 0, 0 }
 local numberSpawned = 0
@@ -19,13 +20,17 @@ local turnNum = 0
 
 function StartRagnarok()
     --not working
-    print('starting Ragnarok!')
-    isRagnarokOn = true
+    if isRagnarokOn == false then
+        print('starting Ragnarok!')
+        isRagnarokOn = true
+    end
 end
 
 function StartRagnarok2()
-    --not working
-    print('starting Ragnarok!')
+    if isRagnarokOn == false then
+        print('starting Ragnarok!')
+        isRagnarokOn = true
+    end
     isRagnarokOn = true
     for _, player in ipairs(getObjectsWithTag('playerPawn')) do
         local testPoggersDoNotStealOriginalOC = player.getVar('myNumberOfVikings') / 2
@@ -122,7 +127,11 @@ function spawnGame()
         mapHelperFunction(1-mapAmounts[i] / 2, 0+mapAmounts[i] / 2,i - 5.5, spawnPoints,i)
     end
 
-    -- randomizeMap(4)
+    dice = spawnObject({
+        type = 'Die_6',
+        position = { 0, 10, 2 },
+    })
+    dice.addTag('dice')
 
     --spawning in player pawns
     local spawnPlayerIndex = 1
@@ -136,6 +145,7 @@ function spawnGame()
         )
         spawnPlayerIndex = spawnPlayerIndex + 1
     end
+
     --spawn decks
     myCombatDeck = spawnObject({
         type = 'Deck',
@@ -242,6 +252,7 @@ function spawnInAPlayer(x, y, z, color, index)
         giveCombatCard = false
         giveBlueCard = false
         myCurrentTile = 0
+        diceRef = Global.getVar('dice')
         myIndex = ]] .. index .. [[
 
         ]]
@@ -410,8 +421,10 @@ function spawnInAPlayer(x, y, z, color, index)
             end
             
             function onPickUp(player_color)
-                if myCurrentTile ~= 0 then
-                    MovementCheck(myCurrentTile, 1, 3)
+                --print(Global.getVar('dice'))
+                
+                if myCurrentTile ~= 0 and diceRef ~= 1 and diceRef ~= nil then
+                    MovementCheck(myCurrentTile, 1, diceRef.value)
                 end
             end
             
@@ -459,12 +472,13 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
         tile.setName(type)
         tile.setVar("numberOfVikings", 0)
         tile.setVar("movementCost", 1)
-
         tile.setVar("customX", customX)
         tile.setVar("customY", customY)
         tile.setVar("giveCombatCard", false)
         tile.setVar("giveResourceCard", false)
         tile.setVar("spawn", false)
+        --tile.setLock(true)
+
         if type == 'playerSpawnTile' then
             tileType = 5
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/' ..
@@ -517,7 +531,7 @@ end
 function onPlayerTurn(previous_player, cur_player)
     if cur_player.color == getSeatedPlayers()[#getSeatedPlayers()] and #getObjectsWithTag('playerPawn') ~= 0 then
         turnNum = turnNum + 1
-        print('starting turn ' .. turnNum)
+        print('starting round ' .. turnNum)
         if turnNum > RagnarokDefStartTurn then
             isRagnarokOn = true
         end
@@ -525,7 +539,7 @@ function onPlayerTurn(previous_player, cur_player)
             ragnarokTurn = ragnarokTurn + 1
             if (ragnarokTurn + 2) % everyNturnShrink == 0 and ragnarokTurn < 11 then
                 ragnarokTurnNum = ragnarokTurnNum + 1
-                print('ragnarok turn ' .. ragnarokTurnNum)
+                print('ragnarok round ' .. ragnarokTurnNum)
                 ragnarokFunc(ragnarokTurnNum)
                 for _, playerPawn in pairs(getObjectsWithTag('playerPawn')) do
                     if playerPawn.getVar('myCurrentTile') ~= nil and playerPawn.getVar('myCurrentTile') ~= 0 then
