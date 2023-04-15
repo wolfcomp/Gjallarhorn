@@ -1,4 +1,3 @@
-
 Hands.hiding = 1
 
 local colors = { "Red", "White", "Orange", "Pink", "Yellow", "Purple", "Green", "Blue" }
@@ -22,6 +21,7 @@ function updateVikingCount(player)
     possiblePog = player.editButton({
         index = 0, label = player.getVar('myNumberOfVikings')
     })
+    if Viking
 end
 
 function subtractAViking(object, player_color)
@@ -310,7 +310,7 @@ function spawnInAPlayer(x, y, z, color, index)
         myNumberOfVikings = 3
         addThisTurn = 0
         giveCombatCard = false
-        giveBlueCard = false
+        giveResourceCard = false
         myCurrentTile = 0
         myTileThisTurn = 0
         isInCombat = false
@@ -324,7 +324,7 @@ function spawnInAPlayer(x, y, z, color, index)
                     Global.UI.hide("CombatUI")
                     addThisTurn = info.collision_object.getVar('numberOfVikings')
                     giveCombatCard = info.collision_object.getVar('giveCombatCard')
-                    giveBlueCard = info.collision_object.getVar('giveBlueCard')
+                    giveResourceCard = info.collision_object.getVar('giveResourceCard')
                     if myCurrentTile ~= 0 and myCurrentTile.hasTag('shouldFlipThisTurn') then
                         myCurrentTile.removeTag('shouldFlipThisTurn')
                     end
@@ -338,7 +338,7 @@ function spawnInAPlayer(x, y, z, color, index)
                 else
                     addThisTurn = 0
                     giveCombatCard = false
-                    giveBlueCard = false
+                    giveResourceCard = false
                     if myCurrentTile ~= nil and myCurrentTile ~= 0 then
                         if myCurrentTile.hasTag('shouldFlipThisTurn') then
                             myCurrentTile.removeTag('shouldFlipThisTurn')
@@ -448,7 +448,7 @@ function spawnInAPlayer(x, y, z, color, index)
 
                         --         for _, spawnLocalTile2 in ipairs(spawnLocalTilesINeedToCheck) do
                         --             spawnLocalTile2.addTag('highlightCheck')
-                        --             spawnLocalTile2.setVar('highlighColor', "White")
+                        --             spawnLocalTile2.setVar('highlighColor', "Red")
                         --             localSpawnTile.highlightOn('Green')
                         --         end
                         --     end
@@ -465,7 +465,7 @@ function spawnInAPlayer(x, y, z, color, index)
                         if localTile5.getVar(movCostTag) <= num then
                             if localTile5.hasTag('highlightCheck') == false then
                                 localTile5.addTag('highlightCheck')
-                                localTile5.setVar('highlighColor', "White")
+                                localTile5.setVar('highlighColor', "Red")
                             end
                         end
                         localTile5.removeTag(movCostTag)
@@ -691,7 +691,7 @@ function onPlayerTurn(previous_player, cur_player)
             if player.getVar('giveCombatCard') == true then
                 myCombatDeck.deal(1, player.getVar('color'))
             end
-            if player.getVar('giveBlueCard') == true then
+            if player.getVar('giveResourceCard') == true then
                 blueDeck.deal(1, player.getVar('color'))
             end
         end
