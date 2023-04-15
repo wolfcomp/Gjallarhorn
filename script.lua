@@ -22,26 +22,24 @@ function updateVikingCount(player)
     possiblePog = player.editButton({
         index = 0, label = player.getVar('myNumberOfVikings')
     })
-    local playerParams = {
-        image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' ..
-            string.lower(player.getVar('color')) .. '.png'
-    }
-    if player.getVar('myNumberOfVikings') >= 12 then
-        --possiblePog2 = player.get
+    --local playerParams = 
+    --if player.getVar('myNumberOfVikings') >= 12 then
         --båt
+        --MAGNUS-SENPEI NOTICE ME! KYAAA!
         --playerParams.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' .. string.lower(player.getVar('color')) .. '.png'
-    else if player.getVar('myNumberOfVikings') >= 8 then
+    --else if player.getVar('myNumberOfVikings') >= 8 then
         --geit
+        --MAGNUS-SENPEI NOTICE ME! KYAAA!
         --playerParams.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' .. string.lower(player.getVar('color')) .. '.png'
-    else if player.getVar('myNumberOfVikings') >= 5 then
+    --else if player.getVar('myNumberOfVikings') >= 5 then
         --berserker
-        --player.setCustomObject(playerParams)
-        --player.reload()
+        --MAGNUS-SENPEI NOTICE ME! KYAAA!
         --playerParams.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' .. string.lower(player.getVar('color')) .. '.png'
-    else if player.getVar('myNumberOfVikings') >= 5 then
+    --else if player.getVar('myNumberOfVikings') >= 5 then
         --normal
+        --MAGNUS-SENPEI NOTICE ME! KYAAA!
         --playerParams.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' .. string.lower(player.getVar('color')) .. '.png'
-    end
+    --end
     --player.setCustomObject(playerParams)
     --player.reload()
 end
@@ -69,14 +67,14 @@ end
 function StartRagnarok()
     --not working
     if isRagnarokOn == false then
-        printToAll('starting Ragnarok!')
+        printAll('starting Ragnarok!')
         isRagnarokOn = true
     end
 end
 
 function StartRagnarok2()
     if isRagnarokOn == false then
-        printToAll('starting Ragnarok!')
+        printAll('starting Ragnarok!')
         isRagnarokOn = true
         for _, player in ipairs(getObjectsWithTag('playerPawn')) do
             local testPoggersDoNotStealOriginalOC = player.getVar('myNumberOfVikings') / 2
@@ -369,7 +367,7 @@ function spawnInAPlayer(x, y, z, color, index)
             function MovementCheck(tile, playerNum, num)
                 if #getObjectsWithTag('dice') > 0 then
                     num = getObjectsWithTag('dice')[1].getRotationValue()
-                    --printToAll(getObjectsWithTag('dice')[1].getRotationValue())
+                    --printAll(getObjectsWithTag('dice')[1].getRotationValue())
                 end
                 local surroundingTilesMovement = { tile }
                 local movCostTag = 'player' .. playerNum .. 'LowestMovCost'
@@ -681,8 +679,7 @@ end
 function onPlayerTurn(previous_player, cur_player)
     if cur_player.color == getSeatedPlayers()[#getSeatedPlayers()] and #getObjectsWithTag('playerPawn') ~= 0 then
         turnNum = turnNum + 1
-        printToAll('starting round ' .. turnNum)
-        --printToAll
+        printAll('starting round ' .. turnNum)
         if turnNum > RagnarokDefStartTurn then
             isRagnarokOn = true
         end
@@ -690,7 +687,7 @@ function onPlayerTurn(previous_player, cur_player)
             ragnarokTurn = ragnarokTurn + 1
             if (ragnarokTurn) % everyNturnShrink == 0 and ragnarokTurn < 11 then
                 ragnarokTurnNum = ragnarokTurnNum + 1
-                printToAll('ragnarok round ' .. ragnarokTurnNum)
+                printAll('ragnarok round ' .. ragnarokTurnNum)
                 ragnarokFunc(ragnarokTurnNum)
                 for _, playerPawn in pairs(getObjectsWithTag('playerPawn')) do
                     if playerPawn.getVar('myCurrentTile') ~= nil and playerPawn.getVar('myCurrentTile') ~= 0 then
