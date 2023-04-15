@@ -1,7 +1,4 @@
 local colors = { "Red", "White", "Orange", "Pink", "Yellow", "Purple", "Green", "Blue" }
---local myGameObjects = {}
---local playerPawns = {}
---availableTileTypes = {'plains', 'forest','mountain', 'swamp'}
 local myCombatDeck = 1
 local blueDeck = 1
 local dice = 1
@@ -18,6 +15,16 @@ local RagnarokDefStartTurn = 5
 
 local turnNum = 0
 
+function forfeitTile(player)
+    for _, playerPawn in ipairs(getObjectsWithTag('playerPawn')) do
+        if playerPawn.getVar('color') ~= nil then
+            if playerPawn.getVar('color') == player.color then
+                playerPawn.setVar('myCurrentTile', nil)
+            end
+        end
+    end
+end
+
 function StartRagnarok()
     --not working
     if isRagnarokOn == false then
@@ -30,19 +37,18 @@ function StartRagnarok2()
     if isRagnarokOn == false then
         print('starting Ragnarok!')
         isRagnarokOn = true
-    end
-    isRagnarokOn = true
-    for _, player in ipairs(getObjectsWithTag('playerPawn')) do
-        local testPoggersDoNotStealOriginalOC = player.getVar('myNumberOfVikings') / 2
-        if testPoggersDoNotStealOriginalOC == math.floor(testPoggersDoNotStealOriginalOC) then
-            player.setVar('myNumberOfVikings', testPoggersDoNotStealOriginalOC)
-        else
-            player.setVar('myNumberOfVikings', math.floor(testPoggersDoNotStealOriginalOC)+1)
+        for _, player in ipairs(getObjectsWithTag('playerPawn')) do
+            local testPoggersDoNotStealOriginalOC = player.getVar('myNumberOfVikings') / 2
+            if testPoggersDoNotStealOriginalOC == math.floor(testPoggersDoNotStealOriginalOC) then
+                player.setVar('myNumberOfVikings', testPoggersDoNotStealOriginalOC)
+            else
+                player.setVar('myNumberOfVikings', math.floor(testPoggersDoNotStealOriginalOC)+1)
+            end
+            possiblePog = player.editButton({
+                index = 0, label = player.getVar('myNumberOfVikings')
+            })
         end
-        possiblePog = player.editButton({
-            index = 0, label = player.getVar('myNumberOfVikings')
-        })
-    end 
+    end
 end
 
 function ragnarokFunc(i)
@@ -132,7 +138,8 @@ function spawnGame()
         position = { 0, 10, 2 },
     })
     dice.addTag('dice')
-
+    dice.addTag('gameObject')
+    
     --spawning in player pawns
     local spawnPlayerIndex = 1
     for _, player in ipairs(Player.getPlayers()) do
@@ -245,19 +252,22 @@ function spawnInAPlayer(x, y, z, color, index)
             string.lower(color) .. '.png'
     }
     player.setCustomObject(params)
-    
     player.setLuaScript([[
         myNumberOfVikings = 3
         addThisTurn = 0
         giveCombatCard = false
         giveBlueCard = false
         myCurrentTile = 0
+        myTileThisTurn = 0
+        isInCombat = false
         myIndex = ]] .. index .. [[
 
         ]]
-        .. 'color = ' .. color .. ' ' .. [[
+        .. 'color = ' .."'" ..color .. "'" .. [[
+
             function onCollisionEnter(info)
                 if info.collision_object.getVar('numberOfVikings') then
+                    Global.UI.hide("CombatUI")
                     addThisTurn = info.collision_object.getVar('numberOfVikings')
                     giveCombatCard = info.collision_object.getVar('giveCombatCard')
                     giveBlueCard = info.collision_object.getVar('giveBlueCard')
@@ -269,11 +279,20 @@ function spawnInAPlayer(x, y, z, color, index)
                     if myCurrentTile.hasTag('canFlip') == true then
                         myCurrentTile.addTag('shouldFlipThisTurn')
                     end
+                elseif info.collision_object.hasTag('playerPawn') == true then
+                    print('start fighting boys')
+                    Global.UI.Show("CombatUI")
                 else
                     addThisTurn = 0
-                    myCurrentTile = 0
                     giveCombatCard = false
                     giveBlueCard = false
+                    if myCurrentTile ~= nil and myCurrentTile ~= 0 then
+                        if myCurrentTile.hasTag('shouldFlipThisTurn') then
+                            myCurrentTile.removeTag('shouldFlipThisTurn')
+                        end
+                    end
+                    Global.UI.hide("CombatUI")
+                    myCurrentTile = 0
                 end
             end
             function MovementCheck(tile, playerNum, num)
@@ -424,9 +443,9 @@ function spawnInAPlayer(x, y, z, color, index)
             end
             
             function onPickUp(player_color)
-                --print(Global.getVar('dice'))
-                
-                if myCurrentTile ~= 0 then
+                if myTileThisTurn ~= 0 then
+                    MovementCheck(myTileThisTurn, 1, 3)
+                elseif myCurrentTile ~= 0 then
                     MovementCheck(myCurrentTile, 1, 3)
                 end
             end
@@ -441,7 +460,6 @@ function spawnInAPlayer(x, y, z, color, index)
                 self.highlightOff('Red')
             end
     ]])
-
     local textButtonParams = {
         click_function = 'notAfunc',
         function_owner = self,
@@ -455,7 +473,6 @@ function spawnInAPlayer(x, y, z, color, index)
         font_color     = { 1, 1, 1 },
         tooltip        = 'number of vikings',
     }
-
     player.createButton(textButtonParams)
     player.addTag('gameObject')
     player.addTag('playerPawn')
@@ -480,6 +497,8 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
         tile.setVar("giveCombatCard", false)
         tile.setVar("giveResourceCard", false)
         tile.setVar("spawn", false)
+        tile.drag_selectable = false
+        tile.gizmo_selectable = false
         --tile.setLock(true)
 
         if type == 'playerSpawnTile' then
@@ -510,7 +529,7 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
             params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/swamp.png'
             
             tile.setVar("giveCombatCard", true)
-            tile.setVar("movementCost", 3)
+            tile.setVar("movementCost", 2)
             tile.addTag('canFlip')
             tileType = 2
         elseif type == 'swamp' then
@@ -557,6 +576,7 @@ function onPlayerTurn(previous_player, cur_player)
 
         for _, player in pairs(getObjectsWithTag('playerPawn')) do
             player.setVar('myNumberOfVikings', player.getVar('myNumberOfVikings') + player.getVar('addThisTurn'))
+            player.setVar('myTileThisTurn', player.getVar('myCurrentTile'))
             possiblePog = player.editButton({
                 index = 0, label = player.getVar('myNumberOfVikings')
             })

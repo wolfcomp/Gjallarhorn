@@ -1,5 +1,5 @@
 <!-- Xml UI. See documentation: https://api.tabletopsimulator.com/ui/introUI/ -->
-<TableLayout>
+<TableLayout ignoreLayout="true">
     <Row></Row>
     <Row preferredHeight="100">
         <HorizontalLayout padding="0 60 0 20">
@@ -9,9 +9,29 @@
             <Cell></Cell>
             <Cell></Cell>
             <Cell></Cell>
-            <Cell><Button onClick="destroyAllObjects">destroyAllObjects</Button></Cell>
+            <Cell><Button onClick="StartRagnarok2">Gjallarhorn</Button></Cell>
             <Cell><Button onClick="spawnGame">new game</Button></Cell>
-            <Cell><Button onClick="randomizeMap">randomizeMap</Button></Cell>
+            <Cell><Button onClick="forfeitTile"> forfeit tile DO THIS</Button></Cell>
         </HorizontalLayout>
     </Row>
 </TableLayout>
+<Row 
+    allowDragging="true"
+    returnToOriginalPositionWhenReleased="false"
+    rectAlignment="MiddleRight"
+    ignoreLayout="true"
+    width="300"
+    Height="300"
+    outline="Black"
+    outlineSize="50,50"
+    id = "CombatUI"
+    active = "false"
+>
+    <Text>Text contained within Panel</Text>
+    <Cell Height="300"><Button>test</Button></Cell>
+    <!--<Text>Text contained within Panel</Text>-->
+</Row>
+<!--
+
+
+-->
