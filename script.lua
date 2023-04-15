@@ -252,7 +252,6 @@ function spawnInAPlayer(x, y, z, color, index)
         giveCombatCard = false
         giveBlueCard = false
         myCurrentTile = 0
-        diceRef = Global.getVar('dice')
         myIndex = ]] .. index .. [[
 
         ]]
@@ -278,6 +277,10 @@ function spawnInAPlayer(x, y, z, color, index)
                 end
             end
             function MovementCheck(tile, playerNum, num)
+                if #getObjectsWithTag('dice') > 0 then
+                    num = getObjectsWithTag('dice')[1].getRotationValue()
+                    --print(getObjectsWithTag('dice')[1].getRotationValue())
+                end
                 local surroundingTilesMovement = { tile }
                 local movCostTag = 'player' .. playerNum .. 'LowestMovCost'
                 local spawnTileInHere = tile.hasTag('playerSpawnTile')
@@ -423,8 +426,8 @@ function spawnInAPlayer(x, y, z, color, index)
             function onPickUp(player_color)
                 --print(Global.getVar('dice'))
                 
-                if myCurrentTile ~= 0 and diceRef ~= 1 and diceRef ~= nil then
-                    MovementCheck(myCurrentTile, 1, diceRef.value)
+                if myCurrentTile ~= 0 then
+                    MovementCheck(myCurrentTile, 1, 3)
                 end
             end
             
