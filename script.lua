@@ -22,20 +22,28 @@ function updateVikingCount(player)
     possiblePog = player.editButton({
         index = 0, label = player.getVar('myNumberOfVikings')
     })
+    local playerParams = {
+        image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' ..
+            string.lower(player.getVar('color')) .. '.png'
+    }
     if player.getVar('myNumberOfVikings') >= 12 then
-        possiblePog2 = player.get
+        --possiblePog2 = player.get
         --båt
-        --player.reload()
+        --playerParams.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' .. string.lower(player.getVar('color')) .. '.png'
     else if player.getVar('myNumberOfVikings') >= 8 then
         --geit
-        --player.reload()
+        --playerParams.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' .. string.lower(player.getVar('color')) .. '.png'
     else if player.getVar('myNumberOfVikings') >= 5 then
         --berserker
+        --player.setCustomObject(playerParams)
         --player.reload()
+        --playerParams.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' .. string.lower(player.getVar('color')) .. '.png'
     else if player.getVar('myNumberOfVikings') >= 5 then
         --normal
-        --player.reload()
+        --playerParams.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/players/' .. string.lower(player.getVar('color')) .. '.png'
     end
+    --player.setCustomObject(playerParams)
+    --player.reload()
 end
 
 function subtractAViking(object, player_color)
