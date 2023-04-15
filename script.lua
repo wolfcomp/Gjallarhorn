@@ -21,7 +21,7 @@ function updateVikingCount(player)
     possiblePog = player.editButton({
         index = 0, label = player.getVar('myNumberOfVikings')
     })
-    if Viking
+    --if Viking
 end
 
 function subtractAViking(object, player_color)
