@@ -280,7 +280,6 @@ function spawnInAPlayer(x, y, z, color, index)
                         myCurrentTile.addTag('shouldFlipThisTurn')
                     end
                 elseif info.collision_object.hasTag('playerPawn') == true then
-                    print('start fighting boys')
                     Global.UI.Show("CombatUI")
                 else
                     addThisTurn = 0

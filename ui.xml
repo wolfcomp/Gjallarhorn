@@ -15,23 +15,41 @@
         </HorizontalLayout>
     </Row>
 </TableLayout>
-<Row 
+<!-- <TableLayout
     allowDragging="true"
     returnToOriginalPositionWhenReleased="false"
-    rectAlignment="MiddleRight"
-    ignoreLayout="true"
     width="300"
     Height="300"
-    outline="Black"
-    outlineSize="50,50"
+    position="0 0 0"
+    color="Black"
     id = "CombatUI"
+    useGlobalCellPadding="false"
+    >
+    <Row ignoreLayout="true" Height="50" Width="300">
+        <Cell><Text>Battle Started!</Text></Cell>
+    </Row>
+    <Row>
+        <Cell><Button>I lost 1 Viking/Life</Button></Cell>
+        <Cell><Button>Flee battle</Button></Cell>
+    </Row>
+</TableLayout> -->
+
+<Panel
+    color="#94938f"
+    Height="300"
+    Width="600"
+    allowDragging="true"
+    returnToOriginalPositionWhenReleased="false"
+    id="CombatUI"
     active = "false"
->
-    <Text>Text contained within Panel</Text>
-    <Cell Height="300"><Button>test</Button></Cell>
-    <!--<Text>Text contained within Panel</Text>-->
-</Row>
+    >
+    <Panel Width="600" color="#94938f">
+        <Cell color="Black" Height = "20" Width="600" offsetXY="0 150"><Text Color = "White">Battle Started!</Text></Cell>
+        <Cell Height = "80" Width="280" offsetXY="-150 50"><Button><Text>Battle Started!</Text></Button></Cell>
+        <Cell Height = "80" Width="280" offsetXY="150 50"><Button><Text>Battle Started!</Text></Button></Cell>
+        <Cell color="Black" Height = "20" Width="600" offsetXY="0 -150"></Cell>
+    </Panel>
+</Panel>
 <!--
-
-
+    active = "false"
 -->
