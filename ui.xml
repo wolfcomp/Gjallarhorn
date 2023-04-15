@@ -40,7 +40,6 @@
     Width="600"
     allowDragging="true"
     returnToOriginalPositionWhenReleased="false"
-    id="CombatUI"
     active = "false"
     >
     <Panel Width="600" color="#94938f">
@@ -51,5 +50,5 @@
     </Panel>
 </Panel>
 <!--
-    active = "false"
+    id="CombatUI"
 -->

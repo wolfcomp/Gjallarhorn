@@ -15,6 +15,14 @@ local RagnarokDefStartTurn = 5
 
 local turnNum = 0
 
+function subtractAViking(player)
+
+end
+
+function addAViking(player)
+
+end
+
 function forfeitTile(player)
     for _, playerPawn in ipairs(getObjectsWithTag('playerPawn')) do
         if playerPawn.getVar('color') ~= nil then
@@ -152,19 +160,35 @@ function spawnGame()
         )
         spawnPlayerIndex = spawnPlayerIndex + 1
     end
-
+    
     --spawn decks
     myCombatDeck = spawnObject({
-        type = 'Deck',
+        type = 'DeckCustom',
         position = { 10, 10, 0 },
     })
+    combatDeckParams ={
+        face = 'C:/temp Tabletop Files/CombatCardCollection.png', back = 'C:/temp Tabletop Files/card backside_Combat.png',
+        width = 2,
+        height = 3,
+        number = 6
+    }
+    myCombatDeck.setCustomObject(combatDeckParams)
+
     myCombatDeck.use_hands = true
     myCombatDeck.addTag('gameObject')
 
+
     blueDeck = spawnObject({
-        type = 'Deck',
+        type = 'DeckCustom',
         position = { -10, 10, 0 },
     })
+    blueDeckParams ={
+        face = 'C:/temp Tabletop Files/ResourceCardCollection2.png', back = 'C:/temp Tabletop Files/card backside_Resources.png',
+        width = 3,
+        height = 3,
+        number = 7
+    }
+    blueDeck.setCustomObject(blueDeckParams)
     blueDeck.use_hands = true
     blueDeck.addTag('gameObject')
 end
@@ -190,19 +214,20 @@ function mapHelperFunction(startIndex, endIndex, yPos, playerSpawn, index)
         else
             type = randomType()
         end
+        tileHeight = 5.35
         if xPos == startIndex or xPos == endIndex or index == 12-1 or index == 1 then
-            spawnATile(x,5,y,type, xPos + 4.5, index, 'ragnarok' .. 1)
+            spawnATile(x,tileHeight,y,type, xPos + 4.5, index, 'ragnarok' .. 1)
         else
             if xPos+1 == startIndex or xPos-1 == startIndex or xPos+1 == endIndex or xPos-1 == endIndex or index == 11-1 or index == 1+1 then
-                spawnATile(x,5,y,type, xPos + 4.5, index,'ragnarok' .. 2)
+                spawnATile(x,tileHeight,y,type, xPos + 4.5, index,'ragnarok' .. 2)
             else
                 if xPos+2 == startIndex or xPos-2 == startIndex or xPos+2 == endIndex or xPos-2 == endIndex or index == 11-2 or index == 1+2 then
-                    spawnATile(x,5,y,type, xPos + 4.5, index,'ragnarok' .. 3)
+                    spawnATile(x,tileHeight,y,type, xPos + 4.5, index,'ragnarok' .. 3)
                 else
                     if xPos+3 == startIndex or xPos-3 == startIndex or xPos+3 == endIndex or xPos-3 == endIndex or index == 11-3 or index == 1+3 then
-                        spawnATile(x,5,y,type, xPos + 4.5, index,'ragnarok' .. 4)
+                        spawnATile(x,tileHeight,y,type, xPos + 4.5, index,'ragnarok' .. 4)
                     else
-                        spawnATile(x,5,y,type, xPos + 4.5, index, '')
+                        spawnATile(x,tileHeight,y,type, xPos + 4.5, index, '')
                     end
                 end
             end
@@ -482,7 +507,7 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
         local tile = spawnObject({
             type = 'Custom_Tile',
             position = { x, y, z },
-            scale = { Grid.sizeX / 2, Grid.sizeX / 2, Grid.sizeX / 2 }
+            scale = { Grid.sizeX / 2 * 99 / 100, Grid.sizeX / 2, Grid.sizeX / 2 * 99 / 100 }
         })
         local params = { image = '', image_bottom = '' }
         local tileType = 0
@@ -498,7 +523,6 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
         tile.setVar("spawn", false)
         tile.drag_selectable = false
         tile.gizmo_selectable = false
-        --tile.setLock(true)
 
         if type == 'playerSpawnTile' then
             tileType = 5
@@ -541,6 +565,7 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
             tile.addTag('canFlip')
             tileType = 4
         end
+        tile.setLock(true)
         tile.addTag('tile')
         tile.addTag(additionalTags)
         tile.setCustomObject(params)
@@ -587,7 +612,9 @@ function onPlayerTurn(previous_player, cur_player)
             end
         end
         for _, tile in pairs(getObjectsWithTag('shouldFlipThisTurn')) do
+            tile.setLock(false)
             tile.flip()
+            tile.setLock(true)
             tile.removeTag("canFlip")
             tile.removeTag('shouldFlipThisTurn')
             tile.setName(tile.getName() .. ' (Stepped on)')
