@@ -18,22 +18,32 @@ local RagnarokDefStartTurn = 5
 local turnNum = 0
 
 function updateVikingCount(player)
+    playerVikings = player.getVar('myNumberOfVikings')
     possiblePog = player.editButton({
         index = 0, label = player.getVar('myNumberOfVikings')
     })
-    --if Viking
+    if player.getVar('myNumberOfVikings') >= 12 then
+        possiblePog2 = player.get
+        --båt
+        --player.reload()
+    else if player.getVar('myNumberOfVikings') >= 8 then
+        --geit
+        --player.reload()
+    else if player.getVar('myNumberOfVikings') >= 5 then
+        --berserker
+        --player.reload()
+    else if player.getVar('myNumberOfVikings') >= 5 then
+        --normal
+        --player.reload()
+    end
 end
 
 function subtractAViking(object, player_color)
-    --print(player_color)
-    --print(object)
     object.setVar('myNumberOfVikings', object.getVar('myNumberOfVikings') - 1)
     updateVikingCount(object)
 end
 
 function addAViking(object, player_color)
-    --print(player_color)
-    --print(object)
     object.setVar('myNumberOfVikings', object.getVar('myNumberOfVikings') + 1)
     updateVikingCount(object)
 end
@@ -51,14 +61,14 @@ end
 function StartRagnarok()
     --not working
     if isRagnarokOn == false then
-        print('starting Ragnarok!')
+        printToAll('starting Ragnarok!')
         isRagnarokOn = true
     end
 end
 
 function StartRagnarok2()
     if isRagnarokOn == false then
-        print('starting Ragnarok!')
+        printToAll('starting Ragnarok!')
         isRagnarokOn = true
         for _, player in ipairs(getObjectsWithTag('playerPawn')) do
             local testPoggersDoNotStealOriginalOC = player.getVar('myNumberOfVikings') / 2
@@ -183,7 +193,7 @@ function spawnGame()
     })
     combatDeckParams ={
         face = 'C:/temp Tabletop Files/CombatCardCollection.png', back = 'C:/temp Tabletop Files/card backside_Combat.png',
-        width = 2,
+        width = 3,
         height = 3,
         number = 6
     }
@@ -351,7 +361,7 @@ function spawnInAPlayer(x, y, z, color, index)
             function MovementCheck(tile, playerNum, num)
                 if #getObjectsWithTag('dice') > 0 then
                     num = getObjectsWithTag('dice')[1].getRotationValue()
-                    --print(getObjectsWithTag('dice')[1].getRotationValue())
+                    --printToAll(getObjectsWithTag('dice')[1].getRotationValue())
                 end
                 local surroundingTilesMovement = { tile }
                 local movCostTag = 'player' .. playerNum .. 'LowestMovCost'
@@ -496,9 +506,9 @@ function spawnInAPlayer(x, y, z, color, index)
             end
             
             function onPickUp(player_color)
-                if myTileThisTurn ~= 0 then
+                if myTileThisTurn ~= 0 and myTileThisTurn ~= nil then
                     MovementCheck(myTileThisTurn, 1, 3)
-                elseif myCurrentTile ~= 0 then
+                elseif myCurrentTile ~= 0 and myTileThisTurn ~= nil then
                     MovementCheck(myCurrentTile, 1, 3)
                 end
             end
@@ -663,15 +673,16 @@ end
 function onPlayerTurn(previous_player, cur_player)
     if cur_player.color == getSeatedPlayers()[#getSeatedPlayers()] and #getObjectsWithTag('playerPawn') ~= 0 then
         turnNum = turnNum + 1
-        print('starting round ' .. turnNum)
+        printToAll('starting round ' .. turnNum)
+        --printToAll
         if turnNum > RagnarokDefStartTurn then
             isRagnarokOn = true
         end
         if isRagnarokOn == true then
             ragnarokTurn = ragnarokTurn + 1
-            if (ragnarokTurn + 2) % everyNturnShrink == 0 and ragnarokTurn < 11 then
+            if (ragnarokTurn) % everyNturnShrink == 0 and ragnarokTurn < 11 then
                 ragnarokTurnNum = ragnarokTurnNum + 1
-                print('ragnarok round ' .. ragnarokTurnNum)
+                printToAll('ragnarok round ' .. ragnarokTurnNum)
                 ragnarokFunc(ragnarokTurnNum)
                 for _, playerPawn in pairs(getObjectsWithTag('playerPawn')) do
                     if playerPawn.getVar('myCurrentTile') ~= nil and playerPawn.getVar('myCurrentTile') ~= 0 then
