@@ -528,8 +528,9 @@ function spawnGame()
         combatCard.addTag('combatCard')
         combatCard.addTag('gameObject')
         combatCard.addTag('cc' .. obj.index)
-        combatCard.flip()
+        myCombatDeck.putObject(combatCard)
     end
+    myCombatDeck.flip()
     combatDiscard = spawnObject({
         type = 'ScriptingTrigger',
         position = combatDiscardPosition,
@@ -567,8 +568,9 @@ function spawnGame()
         resourceCard.addTag('resourceCard')
         resourceCard.addTag('gameObject')
         resourceCard.addTag('rc' .. obj.index)
-        resourceCard.flip()
+        resourceDeck.putObject(resourceCard)
     end
+    resourceDeck.flip()
 
     resourceDiscard = spawnObject({
         type = 'ScriptingTrigger',
