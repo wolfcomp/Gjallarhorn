@@ -9,46 +9,63 @@
             <Cell></Cell>
             <Cell></Cell>
             <Cell></Cell>
-            <Cell><Button onClick="StartRagnarok2">Gjallarhorn</Button></Cell>
             <Cell><Button onClick="spawnGame">new game</Button></Cell>
             <Cell><Button onClick="forfeitTile">forfeit tile</Button></Cell>
         </HorizontalLayout>
     </Row>
 </TableLayout>
-<!-- <TableLayout
-    allowDragging="true"
-    returnToOriginalPositionWhenReleased="false"
-    width="300"
-    Height="300"
-    position="0 0 0"
-    color="Black"
-    id = "CombatUI"
-    useGlobalCellPadding="false"
-    >
-    <Row ignoreLayout="true" Height="50" Width="300">
-        <Cell><Text>Battle Started!</Text></Cell>
-    </Row>
-    <Row>
-        <Cell><Button>I lost 1 Viking/Life</Button></Cell>
-        <Cell><Button>Flee battle</Button></Cell>
-    </Row>
-</TableLayout> -->
 
+<!-- rock paper scissor menu -->
 <Panel
     color="#94938f"
-    Height="300"
+    Height="200"
     Width="600"
     allowDragging="true"
     returnToOriginalPositionWhenReleased="false"
-    active = "false"
+    visibility = "Black"
+    id="rockPaperScissorUI"
     >
     <Panel Width="600" color="#94938f">
-        <Cell color="Black" Height = "20" Width="600" offsetXY="0 150"><Text Color = "White">Battle Started!</Text></Cell>
-        <Cell Height = "80" Width="280" offsetXY="-150 50"><Button><Text>Battle Started!</Text></Button></Cell>
-        <Cell Height = "80" Width="280" offsetXY="150 50"><Button><Text>Battle Started!</Text></Button></Cell>
-        <Cell color="Black" Height = "20" Width="600" offsetXY="0 -150"></Cell>
+        <Cell color="Black" Height = "20" Width="600" offsetXY="0 90"><Text Color = "White">Battle Started!</Text></Cell>
+        <Cell Height = "80" Width="180" offsetXY="-200 20"><Button onClick="onRockPaperScissorCommit(Rock)"><Text>Rock</Text></Button></Cell>
+        <Cell Height = "80" Width="180" offsetXY="0 20"><Button onClick="onRockPaperScissorCommit(Paper)"><Text>Paper</Text></Button></Cell>
+        <Cell Height = "80" Width="180" offsetXY="200 20"><Button onClick="onRockPaperScissorCommit(Scissor)"><Text>Scissor</Text></Button></Cell>
+        <Cell color="Grey" Height = "80" Width="600" offsetXY="0 -75"><Text Color = "Black">to play cards simply put them in the discard pile</Text></Cell>
+        <Cell color="Black" Height = "20" Width="600" offsetXY="0 -120"></Cell>
     </Panel>
 </Panel>
 <!--
-    id="CombatUI"
+    
+-->
+
+<!-- pick a player menu -->
+<Panel
+    color="#94938f"
+    Height="100"
+    Width="400"
+    allowDragging="true"
+    returnToOriginalPositionWhenReleased="false"
+    id="pickAPlayerUI"
+    visibility = "Black"
+    >
+    <Panel Width="400" color="#94938f">
+    </Panel>
+    <Cell color="Black" Height = "20" Width="400" offsetXY="0 40"><Text Color = "White">please pick a color</Text></Cell>
+        <Cell Height = "40" Width="180" offsetXY="-100 0">
+            <Dropdown onValueChanged="onMyColorPickerUpdate">
+                <Option id="1">White</Option>
+                <Option id="2">Red</Option>
+                <Option id="3">Orange</Option>
+                <Option id="4">Yellow</Option>
+                <Option id="5">Green</Option>
+                <Option id="6">Blue</Option>
+                <Option id="7">Purple</Option>
+                <Option id="8">Pink</Option>
+            </Dropdown>
+        </Cell>
+        <Cell Height = "40" Width="180" offsetXY="100 0"><Button onClick="onRockPaperScissorCommit"><Text> pick that player </Text></Button></Cell>
+        <Cell color="Black" Height = "20" Width="400" offsetXY="0 -40"></Cell>
+</Panel>
+<!--
+
 -->
