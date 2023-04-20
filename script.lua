@@ -659,6 +659,7 @@ function spawnInAPlayer(x, y, z, color, index, vikings)
         type = 'Figurine_Custom',
         position = { x, y, z },
     })
+    player.setColorTint(Color.fromString(color))
     setPlayerImage(player, color, vikings)
 
     player.setLuaScript([[
