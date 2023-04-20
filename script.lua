@@ -39,10 +39,10 @@ local playerColorsPicked = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' }
 local playerColorsInCombat = {}
 
 local ragnarokTileImages = {
-    grass: 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass_fire.png',
-    forest: 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/forest_fire.png',
-    mountain: 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain_fire.png',
-    swamp: 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/swamp_fire.png'
+    grass = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass_fire.png',
+    forest = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/forest_fire.png',
+    mountain = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain_fire.png',
+    swamp = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/swamp_fire.png'
 }
 
 
