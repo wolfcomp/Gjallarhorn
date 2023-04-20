@@ -87,34 +87,34 @@ function noCombat()
 end
 
 function onObjectPickUp(player_color, object)
-    if stealACardAction == true and stealACardPlayerColor ~= nil then
-        if player_color == stealACardPlayerColor then
-            if object.hasTag('combatCard') == true or object.hasTag('lastCombatCardPlayed') == true then
-                if object.getVar('iAm') ~= nil then
-                    object.removeTag('lastCombatCardPlayed')
-                    stealACardAction = false
-                    stealACardPlayerColor = nil
-                    printToColor('You stole ' .. combatCardNames[object.getVar('iAm') + 1], player_color)
-                    printToAll(combatCardNames[object.getVar('iAm') + 1] .. ' is no longer in play')
-                end
-            end
-        end
-    end
-    if object.hasTag('combatCard') == true then
-        for i = 0, #combatCardNames, 1 do
-            if object.hasTag('cc' .. i) == true then
-                object.setVar('iAm', i)
-                object.removeTag('cc' .. i)
-            end
-        end
-    elseif object.hasTag('resourceCard') == true then
-        for i = 0, #resourceCardNames, 1 do
-            if object.hasTag('rc' .. i) == true then
-                object.setVar('iAm', i)
-                object.removeTag('rc' .. i)
-            end
-        end
-    end
+    -- if stealACardAction == true and stealACardPlayerColor ~= nil then
+    --     if player_color == stealACardPlayerColor then
+    --         if object.hasTag('combatCard') == true or object.hasTag('lastCombatCardPlayed') == true then
+    --             if object.getVar('iAm') ~= nil then
+    --                 object.removeTag('lastCombatCardPlayed')
+    --                 stealACardAction = false
+    --                 stealACardPlayerColor = nil
+    --                 printToColor('You stole ' .. combatCardNames[object.getVar('iAm') + 1], player_color)
+    --                 printToAll(combatCardNames[object.getVar('iAm') + 1] .. ' is no longer in play')
+    --             end
+    --         end
+    --     end
+    -- end
+    -- if object.hasTag('combatCard') == true then
+    --     for i = 0, #combatCardNames, 1 do
+    --         if object.hasTag('cc' .. i) == true then
+    --             object.setVar('iAm', i)
+    --             object.removeTag('cc' .. i)
+    --         end
+    --     end
+    -- elseif object.hasTag('resourceCard') == true then
+    --     for i = 0, #resourceCardNames, 1 do
+    --         if object.hasTag('rc' .. i) == true then
+    --             object.setVar('iAm', i)
+    --             object.removeTag('rc' .. i)
+    --         end
+    --     end
+    -- end
 end
 
 function combatCardFunc(thisTable)
@@ -207,49 +207,49 @@ function resourceCardFunc(thisTable)
 end
 
 function onObjectDrop(player_color, object)
-    if object.hasTag('playThisCombatCard') == true then
-        object.setLuaScript([[
-            isDone = false
-            function onCollisionEnter(info)
-                colObj = info.collision_object
-                if colObj.hasTag('gameObject') == false then
-                    isDone = true
-                    self.setRotation(]] .. tableToString(deckRotation) .. [[)
+    -- if object.hasTag('playThisCombatCard') == true then
+    --     object.setLuaScript([[
+    --         isDone = false
+    --         function onCollisionEnter(info)
+    --             colObj = info.collision_object
+    --             if colObj.hasTag('gameObject') == false then
+    --                 isDone = true
+    --                 self.setRotation(]] .. tableToString(deckRotation) .. [[)
 
-                    self.setPosition(]] .. tableToString(combatDiscardPosition) .. [[)
+    --                 self.setPosition(]] .. tableToString(combatDiscardPosition) .. [[)
 
-                    self.setLock(true)
-                    params = {
-                        self,
-                        ]] .. "'" .. player_color .. "'" .. [[
-                    }
-                    Global.call("combatCardFunc", params)
-                end
-            end
-        ]])
-        object.addTag('removeThisScript')
-    elseif object.hasTag('playThisResourceCard') == true then
-        object.setLuaScript([[
-            isDone = false
-            function onCollisionEnter(info)
-                colObj = info.collision_object
-                if colObj.hasTag('gameObject') == false then
-                    isDone = true
-                    self.setRotation(]] .. tableToString(deckRotation) .. [[)
+    --                 self.setLock(true)
+    --                 params = {
+    --                     self,
+    --                     ]] .. "'" .. player_color .. "'" .. [[
+    --                 }
+    --                 Global.call("combatCardFunc", params)
+    --             end
+    --         end
+    --     ]])
+    --     object.addTag('removeThisScript')
+    -- elseif object.hasTag('playThisResourceCard') == true then
+    --     object.setLuaScript([[
+    --         isDone = false
+    --         function onCollisionEnter(info)
+    --             colObj = info.collision_object
+    --             if colObj.hasTag('gameObject') == false then
+    --                 isDone = true
+    --                 self.setRotation(]] .. tableToString(deckRotation) .. [[)
 
-                    self.setPosition(]] .. tableToString(resourceDiscardPostion) .. [[)
+    --                 self.setPosition(]] .. tableToString(resourceDiscardPostion) .. [[)
 
-                    self.setLock(true)
-                    params = {
-                        self,
-                        ]] .. "'" .. player_color .. "'" .. [[
-                    }
-                    Global.call("resourceCardFunc", params)
-                end
-            end
-        ]])
-        object.addTag('removeThisScript')
-    end
+    --                 self.setLock(true)
+    --                 params = {
+    --                     self,
+    --                     ]] .. "'" .. player_color .. "'" .. [[
+    --                 }
+    --                 Global.call("resourceCardFunc", params)
+    --             end
+    --         end
+    --     ]])
+    --     object.addTag('removeThisScript')
+    -- end
 end
 
 function onPlayerAction(player, action, targets)
@@ -264,7 +264,7 @@ function onPlayerAction(player, action, targets)
     if targets[1].hasTag('playerPawn') then
         if player.color ~= targets[1].getVar('playerColor') then
             printToColor('This Chieftan belongs to ' .. targets[1].getVar('playerColor'), player.color)
-            return false
+            return true
         end
     end
 end
@@ -324,9 +324,9 @@ function setPlayerImage(player, color, vikings)
     }
     if v >= 9 then
         params.image = params.image .. 'boat/'
-    elseif v >= 6 then
+    elseif v >= 5 then
         params.image = params.image .. 'goat/'
-    elseif v >= 3 then
+    elseif v >= 2 then
         params.image = params.image .. 'war/'
     else
         params.image = params.image .. 'norm/'
@@ -486,18 +486,18 @@ function spawnGame()
     -- randomizeMap(4)
 
     --spawning in player pawns
-    local spawnPlayerIndex = 1
-    for _, player in ipairs(Player.getPlayers()) do
-        spawnInAPlayer(
-            player.getHandTransform().position.x,
-            player.getHandTransform().position.y,
-            player.getHandTransform().position.z,
-            player.color,
-            spawnPlayerIndex,
-            3
-        )
-        spawnPlayerIndex = spawnPlayerIndex + 1
-    end
+    -- local spawnPlayerIndex = 1
+    -- for _, player in ipairs(Player.getPlayers()) do
+    --     spawnInAPlayer(
+    --         player.getHandTransform().position.x,
+    --         player.getHandTransform().position.y,
+    --         player.getHandTransform().position.z,
+    --         player.color,
+    --         spawnPlayerIndex,
+    --         3
+    --     )
+    --     spawnPlayerIndex = spawnPlayerIndex + 1
+    -- end
     --spawn decks
     deckScale = { 1.75, 1.75, 1.75 }
     myCombatDeck = spawnObject({
@@ -521,16 +521,9 @@ function spawnGame()
     myCombatDeck.setName('Combat Cards')
     myCombatDeck.addTag('gameObject')
 
-    for _, obj in ipairs(myCombatDeck.getObjects()) do
-        local combatCard = myCombatDeck.takeObject({
-            GUID = obj.guid
-        })
-        combatCard.addTag('combatCard')
-        combatCard.addTag('gameObject')
-        combatCard.addTag('cc' .. obj.index)
-        myCombatDeck.putObject(combatCard)
-    end
     myCombatDeck.flip()
+    myCombatDeck.shuffle()
+
     combatDiscard = spawnObject({
         type = 'ScriptingTrigger',
         position = combatDiscardPosition,
@@ -561,16 +554,8 @@ function spawnGame()
     resourceDeck.setName('Resource Cards')
     resourceDeck.addTag('gameObject')
 
-    for _, obj in ipairs(resourceDeck.getObjects()) do
-        local resourceCard = resourceDeck.takeObject({
-            GUID = obj.guid
-        })
-        resourceCard.addTag('resourceCard')
-        resourceCard.addTag('gameObject')
-        resourceCard.addTag('rc' .. obj.index)
-        resourceDeck.putObject(resourceCard)
-    end
     resourceDeck.flip()
+    resourceDeck.shuffle()
 
     resourceDiscard = spawnObject({
         type = 'ScriptingTrigger',
@@ -712,148 +697,6 @@ function onCollisionEnter(info)
         myCurrentTile = 0
     end
 end
-function MovementCheck(tile, playerNum, num)
-    if #getObjectsWithTag('myDice') > 0 then
-        num = getObjectsWithTag('myDice')[1].getRotationValue()
-        --printToAll(getObjectsWithTag('myDice')[1].getRotationValue())
-    end
-    if #getObjectsWithTag('myDice') > 0 then
-        heavyRainNum = getObjectsWithTag('myDice')[1].getVar('heavyRainNum')
-        if heavyRainNum ~= nil then
-            num = heavyRainNum
-        end
-    else
-        printToAll('something wrong with dice')
-    end
-
-    if Global.getVar('fleinSoppOn') == true then
-        num = num * 2
-    end
-
-    local surroundingTilesMovement = { tile }
-    local movCostTag = 'player' .. playerNum .. 'LowestMovCost'
-    local spawnTileInHere = tile.hasTag('playerSpawnTile')
-    local lowestSpawnTileCost = 200
-    if spawnTileInHere == true then
-        lowestSpawnTileCost = 0
-    end
-    tile.setVar(movCostTag, 0)
-
-    if num > 0 then
-        if Global.GetVar('superShoeOn') == true then
-            for _, localTile in ipairs(getObjectsWithTag('tile')) do
-                local x = localTile.getVar('customX')
-                local y = localTile.getVar('customY')
-                local diffX = math.abs(x - tile.getVar('customX'))
-                local diffY = math.abs(y - tile.getVar('customY'))
-                local diff = diffX + diffY
-                if diff <= num then
-                    localTile.addTag('highlightCheck')
-                    localTile.setVar('highlighColor', "Red")
-                    if localTile.hasTag('playerSpawnTile') then
-                        spawnTileInHere = true
-                    end
-                end
-            end
-        else
-            local absIndexMovementCheck = 0
-            while(#surroundingTilesMovement > 0 and absIndexMovementCheck < 200)
-            do
-
-                local localTileMovement = surroundingTilesMovement[#surroundingTilesMovement]
-                local x = localTileMovement.getVar('customX')
-                local y = localTileMovement.getVar('customY')
-                local currentMovCost = localTileMovement.getVar(movCostTag)
-
-                if localTileMovement.hasTag('playerSpawnTile') == true  and localTileMovement.hasTag(movCostTag) == true and localTileMovement.getVar(movCostTag) < lowestSpawnTileCost and localTileMovement.getVar(movCostTag) <= num then
-                    lowestSpawnTileCost = currentMovCost
-                    spawnTileInHere = true
-                end
-
-                if math.abs(x - tile.getVar('customX')) <= num and math.abs(y - tile.getVar('customY')) <= num and localTileMovement.hasTag('checked') == false then
-                    for _, localTile2 in ipairs(checkHelper(localTileMovement)) do
-                        if math.abs(localTile2.getVar('customX') - tile.getVar('customX')) <= num and math.abs(localTile2.getVar('customY') - tile.getVar('customY')) <= num and localTile2.hasTag('checked') == false then
-                            if localTile2.hasTag(movCostTag) == true then
-                                if localTileMovement.getVar(movCostTag) + localTile2.getVar('movementCost') < localTile2.getVar(movCostTag) then
-                                    localTile2.setVar(movCostTag, localTileMovement.getVar(movCostTag) + localTile2.getVar('movementCost'))
-                                    for _, localTile3 in ipairs(checkHelper(localTile2)) do
-                                        table.insert(surroundingTilesMovement, 1, localTile3)
-                                    end
-                                end
-                            else
-                                localTile2.addTag(movCostTag)
-                                localTile2.setVar(movCostTag, localTileMovement.getVar(movCostTag) + localTile2.getVar('movementCost'))
-                                table.insert(surroundingTilesMovement, 1, localTile2)
-                            end
-                        end
-                    end
-                end
-
-                localTileMovement.addTag('checked')
-                table.remove(surroundingTilesMovement)
-                absIndexMovementCheck = absIndexMovementCheck + 1
-            end
-        end
-        tile.highlightOff('White')
-
-        if spawnTileInHere == true then
-            for _, localTile4 in ipairs(getObjectsWithTag('playerSpawnTile')) do
-                localTile4.addTag('highlightCheck')
-                localTile4.setVar('highlighColor', 'Green')
-            end
-        end
-        for _, localTile4 in ipairs(getObjectsWithTag('checked')) do
-            localTile4.removeTag('checked')
-        end
-        for _, localTile5 in ipairs(getObjectsWithTag(movCostTag)) do
-            if localTile5.getVar(movCostTag) <= num then
-                if localTile5.hasTag('highlightCheck') == false then
-                    localTile5.addTag('highlightCheck')
-                    localTile5.setVar('highlighColor', "Red")
-                end
-            end
-            localTile5.removeTag(movCostTag)
-            localTile5.setVar(movCostTag, 1000)
-        end
-        for _, localTile6 in ipairs(getObjectsWithTag('highlightCheck')) do
-            localTile6.highlightOn(localTile6.getVar('highlighColor'))
-            localTile6.removeTag('highlightCheck')
-        end
-    end
-end
-function checkHelper(tile)
-    local surroundingTilesCheckHelper = {}
-    local orgXCheckHelper = tile.getVar('customX')
-    local orgYCheckHelper = tile.getVar('customY')
-    for _, checkHelperLocalTile in ipairs(getObjectsWithTag('tile')) do
-        local xCheckHelper = checkHelperLocalTile.getVar('customX')
-        local yCheckHelper = checkHelperLocalTile.getVar('customY')
-        if math.abs(xCheckHelper - orgXCheckHelper) < 1 or math.abs(yCheckHelper - orgYCheckHelper) < 1 then
-            if math.abs(xCheckHelper - orgXCheckHelper) < 2 and math.abs(yCheckHelper - orgYCheckHelper) < 2 then
-                if checkHelperLocalTile ~= tile then
-                    surroundingTilesCheckHelper[#surroundingTilesCheckHelper + 1] = checkHelperLocalTile
-                end
-            end
-        end
-    end
-    return surroundingTilesCheckHelper
-end
-function onPickUp(player_color)
-    if myTileThisTurn ~= 0 and myTileThisTurn ~= nil then
-        MovementCheck(myTileThisTurn, 1, 3)
-    elseif myCurrentTile ~= 0 and myTileThisTurn ~= nil then
-        MovementCheck(myCurrentTile, 1, 3)
-    end
-end
-function onDrop(player_color)
-    for _, tile in ipairs(getObjectsWithTag('tile')) do
-        tile.highlightOff('White')
-    end
-    for _, tile in ipairs(getObjectsWithTag('player' .. myIndex .. 'LowestMovCost')) do
-        tile.removeTag('player' .. myIndex .. 'LowestMovCost')
-    end
-    self.highlightOff('Red')
-end
     ]])
 
     player.setVar('playerColor', color)
@@ -874,7 +717,7 @@ end
     local textButtonParams2 = {
         click_function = 'subtractAViking',
         function_owner = self,
-        label          = '--',
+        label          = '-',
         position       = { -2.5, 1, 0 },
         rotation       = { -90, 0, 0 },
         width          = 800,
@@ -887,7 +730,7 @@ end
     local textButtonParams3 = {
         click_function = 'addAViking',
         function_owner = self,
-        label          = '++',
+        label          = '+',
         position       = { -2.5, 2, 0 },
         rotation       = { 90, 0, 180 },
         width          = 800,
@@ -900,7 +743,7 @@ end
     local textButtonParams4 = {
         click_function = 'subtractAViking',
         function_owner = self,
-        label          = '--',
+        label          = '-',
         position       = { -2.5, 1, 0 },
         rotation       = { 90, 0, 180 },
         width          = 800,
@@ -913,7 +756,7 @@ end
     local textButtonParams5 = {
         click_function = 'addAViking',
         function_owner = self,
-        label          = '++',
+        label          = '+',
         position       = { -2.5, 2, 0 },
         rotation       = { -90, 0, 0 },
         width          = 800,
@@ -965,6 +808,17 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
                 string.lower(colors[tileTypeSpawnAmounts[tileType] + 1]) .. '_tile.png'
             tile.setVar("spawn", true)
             tile.addTag('playerSpawnTile')
+            if(indexOf(getPlayerConnectedColors(), colors[tileTypeSpawnAmounts[tileType] + 1]) ~= nil) then
+                local position = tile.getPosition()
+                spawnInAPlayer(
+                    position.x,
+                    position.y + .5,
+                    position.z,
+                    colors[tileTypeSpawnAmounts[tileType] + 1],
+                    tileTypeSpawnAmounts[tileType] + 1,
+                    3
+                )
+            end
         elseif type == 'forest' then
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/forest.png'
             params.image_bottom = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/forest_used.png'
@@ -1119,4 +973,21 @@ function getPlayerPawn(color)
             return playerPawn
         end
     end
+end
+
+function indexOf(array, value)
+    for i, v in ipairs(array) do
+        if v == value then
+            return i
+        end
+    end
+    return nil
+end
+
+function getPlayerConnectedColors()
+    local colors = {}
+    for _, player in ipairs(getSeatedPlayers()) do
+        table.insert(colors, player)
+    end
+    return colors
 end
