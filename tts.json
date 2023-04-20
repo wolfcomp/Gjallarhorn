@@ -20,6 +20,7 @@
   "Table": "Table_Custom_Square",
   "TableURL": "https://screenshots.wildwolf.dev/Gjallarhorn/background.png",
   "Sky": "Sky_Cathedral",
+  "SkyURL": "https://screenshots.wildwolf.dev/Gjallarhorn/background.png",
   "Note": "",
   "TabStates": {
     "0": {
@@ -219,7 +220,7 @@
     "TurnOrder": [],
     "Reverse": false,
     "SkipEmpty": false,
-    "DisableInteractions": true,
+    "DisableInteractions": false,
     "PassTurns": true,
     "TurnColor": "White"
   },
