@@ -38,6 +38,13 @@ local playersInCombat = false
 local playerColorsPicked = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' }
 local playerColorsInCombat = {}
 
+local ragnarokTileImages = {
+    grass: 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass_fire.png',
+    forest: 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/forest_fire.png',
+    mountain: 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain_fire.png',
+    swamp: 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/swamp_fire.png'
+}
+
 
 --variables below can't be local cuz i'm using global.getVar to access them
 fleinSoppOn = false
@@ -262,9 +269,11 @@ function onPlayerAction(player, action, targets)
         end
     end
     if targets[1].hasTag('playerPawn') then
-        if player.color ~= targets[1].getVar('playerColor') then
-            printToColor('This Chieftan belongs to ' .. targets[1].getVar('playerColor'), player.color)
-            return true
+        if targets[1].getVar('playerColor') ~= nil then
+            if player.color ~= targets[1].getVar('playerColor') then
+                printToColor('This Chieftan belongs to ' .. targets[1].getVar('playerColor'), player.color)
+                return true
+            end
         end
     end
 end
@@ -802,6 +811,7 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
         tile.setVar("spawn", false)
         tile.drag_selectable = false
         tile.gizmo_selectable = false
+        tile.setVar("tileType", type)
         if type == 'playerSpawnTile' then
             tileType = 5
             params.image = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/' ..
