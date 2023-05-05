@@ -11,6 +11,7 @@
             <Cell></Cell>
             <Cell><Button onClick="spawnGame">new game</Button></Cell>
             <Cell><Button onClick="forfeitTile">forfeit tile</Button></Cell>
+            <Cell><Button onClick="StartRagnarok2">gjallarhorn</Button></Cell>
         </HorizontalLayout>
     </Row>
 </TableLayout>

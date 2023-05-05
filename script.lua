@@ -24,7 +24,7 @@ local numberSpawned = 0
 local isRagnarokOn = false
 local ragnarokTurn = 0
 local ragnarokTurnNum = 0
-local everyNturnShrink = 3
+local everyNturnShrink = 2
 local RagnarokDefStartTurn = 5
 local turnNum = 0
 
@@ -39,7 +39,8 @@ local playerColorsPicked = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' }
 local playerColorsInCombat = {}
 
 local ragnarokTileImages = {
-    grass = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass_fire.png',
+    playerSpawnTile = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass_fire.png',
+    plains = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass_fire.png',
     forest = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/forest_fire.png',
     mountain = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/mountain_fire.png',
     swamp = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/swamp_fire.png'
@@ -323,6 +324,29 @@ function StartRagnarok2()
             player.destruct()
             spawnInAPlayer(position.x, position.y, position.z, color, index, vikings)
         end
+        for _, tile in ipairs(getObjectsWithTag('ragnarok1')) do
+            local params = { image = '', image_bottom = nil }
+            --types 'playerSpawnTile' 'forest' 'plains' 'mountain' 'swamp'
+            params.image = ragnarokTileImages[tile.getVar('tileType')]
+            tile.setCustomObject(params)
+            tile.reload()
+        end
+    end
+end
+
+function ragnarokFunc(i)
+    for _, object in ipairs(getObjectsWithTag('ragnarok' .. i)) do
+        destroyObject(object)
+    end
+end
+
+function otherRagnarokFunc(i)
+    for _, tile in ipairs(getObjectsWithTag('ragnarok' .. i + 1)) do
+        local params = { image = '', image_bottom = nil }
+        --types 'playerSpawnTile' 'forest' 'plains' 'mountain' 'swamp'
+        params.image = ragnarokTileImages[tile.getVar('tileType')]
+        tile.setCustomObject(params)
+        tile.reload()
     end
 end
 
@@ -342,12 +366,6 @@ function setPlayerImage(player, color, vikings)
     end
     params.image = params.image .. string.lower(color) .. '.png'
     player.setCustomObject(params)
-end
-
-function ragnarokFunc(i)
-    for _, object in ipairs(getObjectsWithTag('ragnarok' .. i)) do
-        destroyObject(object)
-    end
 end
 
 -- https://stackoverflow.com/questions/5977654/how-do-i-use-the-bitwise-operator-xor-in-lua
@@ -663,50 +681,50 @@ function spawnInAPlayer(x, y, z, color, index, vikings)
     setPlayerImage(player, color, vikings)
 
     player.setLuaScript([[
-myNumberOfVikings = ]] .. vikings .. [[
+    myNumberOfVikings = ]] .. vikings .. [[
 
-addThisTurn = 0
-giveCombatCard = false
-giveResourceCard = false
-myCurrentTile = 0
-myTileThisTurn = 0
-isInCombat = false
-firstTurn = true
-myIndex = ]] .. index .. [[
+    addThisTurn = 0
+    giveCombatCard = false
+    giveResourceCard = false
+    myCurrentTile = 0
+    myTileThisTurn = 0
+    isInCombat = false
+    firstTurn = true
+    myIndex = ]] .. index .. [[
 
-function onCollisionEnter(info)
-    if info.collision_object.getVar('tileNumberOfVikings') then
-        Global.call('noCombat')
-        addThisTurn = info.collision_object.getVar('tileNumberOfVikings')
-        giveCombatCard = info.collision_object.getVar('giveCombatCard')
-        giveResourceCard = info.collision_object.getVar('giveResourceCard')
-        if myCurrentTile ~= 0 and myCurrentTile.hasTag('shouldFlipThisTurn') then
-            myCurrentTile.removeTag('shouldFlipThisTurn')
-        end
-        myCurrentTile = info.collision_object
-
-        if myCurrentTile.hasTag('canFlip') == true then
-            myCurrentTile.addTag('shouldFlipThisTurn')
-        end
-    elseif info.collision_object.hasTag('playerPawn') == true then
-        params = {
-            playerColor,
-            info.collision_object.getVar('playerColor')
-        }
-        Global.call('onCombatStart', params)
-    else
-        addThisTurn = 0
-        giveCombatCard = false
-        giveResourceCard = false
-        if myCurrentTile ~= nil and myCurrentTile ~= 0 then
-            if myCurrentTile.hasTag('shouldFlipThisTurn') then
+    function onCollisionEnter(info)
+        if info.collision_object.getVar('tileNumberOfVikings') then
+            Global.call('noCombat')
+            addThisTurn = info.collision_object.getVar('tileNumberOfVikings')
+            giveCombatCard = info.collision_object.getVar('giveCombatCard')
+            giveResourceCard = info.collision_object.getVar('giveResourceCard')
+            if myCurrentTile ~= 0 and myCurrentTile.hasTag('shouldFlipThisTurn') then
                 myCurrentTile.removeTag('shouldFlipThisTurn')
             end
+            myCurrentTile = info.collision_object
+
+            if myCurrentTile.hasTag('canFlip') == true then
+                myCurrentTile.addTag('shouldFlipThisTurn')
+            end
+        elseif info.collision_object.hasTag('playerPawn') == true then
+            params = {
+                playerColor,
+                info.collision_object.getVar('playerColor')
+            }
+            Global.call('onCombatStart', params)
+        else
+            addThisTurn = 0
+            giveCombatCard = false
+            giveResourceCard = false
+            if myCurrentTile ~= nil and myCurrentTile ~= 0 then
+                if myCurrentTile.hasTag('shouldFlipThisTurn') then
+                    myCurrentTile.removeTag('shouldFlipThisTurn')
+                end
+            end
+            Global.call('noCombat')
+            myCurrentTile = 0
         end
-        Global.call('noCombat')
-        myCurrentTile = 0
     end
-end
     ]])
 
     player.setVar('playerColor', color)
@@ -874,7 +892,7 @@ function onPlayerTurn(previous_player, cur_player)
     if cur_player.color == getSeatedPlayers()[#getSeatedPlayers()] and #getObjectsWithTag('playerPawn') ~= 0 then
         turnNum = turnNum + 1
         printToAll('starting round ' .. turnNum)
-        if turnNum > RagnarokDefStartTurn then
+        if turnNum >= RagnarokDefStartTurn then
             isRagnarokOn = true
         end
         if isRagnarokOn == true then
@@ -891,6 +909,8 @@ function onPlayerTurn(previous_player, cur_player)
                         end
                     end
                 end
+            else
+                otherRagnarokFunc(ragnarokTurnNum)
             end
             if ragnarokTurnNum == 0 then
                 for _, playerPawn in pairs(getObjectsWithTag('playerPawn')) do
