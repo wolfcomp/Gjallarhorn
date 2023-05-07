@@ -535,9 +535,9 @@ function spawnGame()
     combatDeckParams = {
         face = 'https://screenshots.wildwolf.dev/Gjallarhorn/card/combat.png',
         back = 'https://screenshots.wildwolf.dev/Gjallarhorn/card/cback.png',
-        width = 3,
-        height = 3,
-        number = 6,
+        width = 6,
+        height = 4,
+        number = 22,
         back_is_hidden = true,
     }
     myCombatDeck.use_hands = true
@@ -568,9 +568,9 @@ function spawnGame()
     resourceDeckParams = {
         face = 'https://screenshots.wildwolf.dev/Gjallarhorn/card/resource.png',
         back = 'https://screenshots.wildwolf.dev/Gjallarhorn/card/rback.png',
-        width = 3,
+        width = 5,
         height = 3,
-        number = 7,
+        number = 12,
         back_is_hidden = true,
     }
     resourceDeck.use_hands = true
