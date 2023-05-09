@@ -659,6 +659,61 @@
       "LuaScript": "",
       "LuaScriptState": "",
       "XmlUI": ""
+    },
+    {
+      "GUID": "eebc5d",
+      "Name": "Custom_Model",
+      "Transform": {
+        "posX": 14,
+        "posY": 6,
+        "posZ": -14,
+        "rotX": 0,
+        "rotY": 45,
+        "rotZ": 0,
+        "scaleX": 0.7,
+        "scaleY": 0.7,
+        "scaleZ": 0.7
+      },
+      "Nickname": "",
+      "Description": "",
+      "GMNotes": "",
+      "AltLookAngle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "ColorDiffuse": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0
+      },
+      "LayoutGroupSortIndex": 0,
+      "Value": 0,
+      "Locked": true,
+      "Grid": true,
+      "Snap": true,
+      "IgnoreFoW": false,
+      "MeasureMovement": false,
+      "DragSelectable": true,
+      "Autoraise": false,
+      "Sticky": true,
+      "Tooltip": true,
+      "GridProjection": false,
+      "HideWhenFaceDown": false,
+      "Hands": false,
+      "CustomMesh": {
+        "MeshURL": "https://screenshots.wildwolf.dev/Gjallarhorn/VikingShipModel_Textured.obj",
+        "DiffuseURL": "https://screenshots.wildwolf.dev/Gjallarhorn/Vikingship_TexturedModel.png",
+        "NormalURL": "",
+        "ColliderURL": "",
+        "Convex": true,
+        "MaterialIndex": 0,
+        "TypeIndex": 4,
+        "CastShadows": true
+      },
+      "LuaScript": "",
+      "LuaScriptState": "",
+      "XmlUI": ""
     }
   ]
 }
