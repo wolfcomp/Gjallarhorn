@@ -37,6 +37,7 @@ local stealACardPlayerColor = nil
 local playersInCombat = false
 local playerColorsPicked = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' }
 local playerColorsInCombat = {}
+local firstTurnColor = Turns.turn_color
 
 local ragnarokTileImages = {
     playerSpawnTile = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass_fire.png',
@@ -434,6 +435,7 @@ function randomizeMap(times)
 end
 
 function spawnGame()
+    printToAll('starting round ' .. turnNum)
     destroyAllObjects()
     gameStarted = true
     --spawning in the map
@@ -486,7 +488,7 @@ function spawnGame()
                 Wait.condition(
                 function() -- Executed after our condition is met
                     if self.isDestroyed() then
-                        --printToAll("Die was destroyed before it came to rest.")
+                        
                     elseif newNum == true then
                         timesDiceThrownThisTurn = timesDiceThrownThisTurn + 1
                         if timesDiceThrownThisTurn % 2 == 0 then
@@ -933,9 +935,12 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
 end
 
 function onPlayerTurn(previous_player, cur_player)
+    printToAll(Turns.getNextTurnColor())
+
     if cur_player.color == getSeatedPlayers()[#getSeatedPlayers()] and #getObjectsWithTag('playerPawn') ~= 0 then
         turnNum = turnNum + 1
         printToAll('starting round ' .. turnNum)
+        --printToAll(firstTurnColor)
         if turnNum >= RagnarokDefStartTurn then
             isRagnarokOn = true
         end
@@ -1007,18 +1012,15 @@ function onPlayerTurn(previous_player, cur_player)
         dice.setVar('heavyRainNum', nil)
         dice.setVar('timesDiceThrownThisTurn', 0)
         fleinSoppOn = false
-        --printToAll('It is ' .. previous_player.color .. "'s turn.")
         if heavyRainOn == true then
             if heavyRainPlayedBeforeMovement == true then
                 if previous_player.color == heavyRainColor then
                     heavyRainOn = false
-                    --printToAll('Heavy rain is over')
                 end
             else
                 if cur_player.color == heavyRainColor then
                     if heavyRainTurn < turnNum then
                         heavyRainOn = false
-                        --printToAll('Heavy rain is over')
                     end
                 end
             end
