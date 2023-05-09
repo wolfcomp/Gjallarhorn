@@ -9,8 +9,8 @@
             <Cell></Cell>
             <Cell></Cell>
             <Cell></Cell>
-            <Cell><Button onClick="spawnGame">new game</Button></Cell>
-            <Cell><Button onClick="StartRagnarok2">gjallarhorn</Button></Cell>
+            <Cell><Button onClick="spawnGame" fontSize="18">New Game</Button></Cell>
+            <Cell><Button onClick="StartRagnarok2" fontSize="18">Gjallarhorn</Button></Cell>
         </HorizontalLayout>
     </Row>
 </TableLayout>
