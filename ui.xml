@@ -23,7 +23,6 @@
     allowDragging="true"
     returnToOriginalPositionWhenReleased="false"
     visibility = "Black"
-    id="rockPaperScissorUI"
     >
     <Panel Width="600" color="#94938f">
         <Cell color="Black" Height = "20" Width="600" offsetXY="0 90"><Text Color = "White">Battle Started!</Text></Cell>
@@ -35,7 +34,7 @@
     </Panel>
 </Panel>
 <!--
-    
+    id="rockPaperScissorUI"
 -->
 
 <!-- pick a player menu -->
