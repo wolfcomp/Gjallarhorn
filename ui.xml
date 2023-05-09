@@ -10,7 +10,6 @@
             <Cell></Cell>
             <Cell></Cell>
             <Cell><Button onClick="spawnGame">new game</Button></Cell>
-            <Cell><Button onClick="forfeitTile">forfeit tile</Button></Cell>
             <Cell><Button onClick="StartRagnarok2">gjallarhorn</Button></Cell>
         </HorizontalLayout>
     </Row>
@@ -46,7 +45,6 @@
     Width="400"
     allowDragging="true"
     returnToOriginalPositionWhenReleased="false"
-    id="pickAPlayerUI"
     visibility = "Black"
     >
     <Panel Width="400" color="#94938f">
@@ -68,5 +66,5 @@
         <Cell color="Black" Height = "20" Width="400" offsetXY="0 -40"></Cell>
 </Panel>
 <!--
-
+     id="pickAPlayerUI"
 -->
