@@ -935,7 +935,7 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
 end
 
 function onPlayerTurn(previous_player, cur_player)
-    if cur_player.color == getSeatedPlayers()[#getSeatedPlayers()] and #getObjectsWithTag('playerPawn') ~= 0 then
+    if cur_player ~= nil and cur_player.color == getSeatedPlayers()[#getSeatedPlayers()] and #getObjectsWithTag('playerPawn') ~= 0 then
         turnNum = turnNum + 1
         printToAll('starting round ' .. turnNum)
         if turnNum >= RagnarokDefStartTurn then
