@@ -26,7 +26,7 @@ local ragnarokTurn = 0
 local ragnarokTurnNum = 0
 local everyNturnShrink = 2
 local RagnarokDefStartTurn = 5
-local turnNum = 0
+local turnNum = 1
 
 local gameStarted = false
 local heavyRainColor = nil
@@ -56,7 +56,7 @@ function onMyColorPickerUpdate(player, option, id)
     for index = 1, 8, 1 do
         if player.color == allPossibleTableTopColors[index] then
             playerColorsPicked[index] = option
-            print(player.color .. 'picked ' .. playerColorsPicked[index])
+            --print(player.color .. 'picked ' .. playerColorsPicked[index])
         end
     end
 end
@@ -78,9 +78,9 @@ function onCombatStart(params)
     local player2Color = params[2]
     if player1Color ~= nil and player2Color ~= nil then
         if playersInCombat == false then
-            printToAll('Battle Begun')
+            --printToAll('Battle Begun')
             local valueToSend = '"' .. player1Color .. "|" .. player2Color .. '"'
-            print(valueToSend)
+            --print(valueToSend)
             UI.setAttribute("rockPaperScissorUI", "visibility", valueToSend)
             UI.show("rockPaperScissorUI")
         end
@@ -95,6 +95,7 @@ function noCombat()
 end
 
 function onObjectPickUp(player_color, object)
+    object.addTag('gameObject')
     -- if stealACardAction == true and stealACardPlayerColor ~= nil then
     --     if player_color == stealACardPlayerColor then
     --         if object.hasTag('combatCard') == true or object.hasTag('lastCombatCardPlayed') == true then
@@ -102,8 +103,6 @@ function onObjectPickUp(player_color, object)
     --                 object.removeTag('lastCombatCardPlayed')
     --                 stealACardAction = false
     --                 stealACardPlayerColor = nil
-    --                 printToColor('You stole ' .. combatCardNames[object.getVar('iAm') + 1], player_color)
-    --                 printToAll(combatCardNames[object.getVar('iAm') + 1] .. ' is no longer in play')
     --             end
     --         end
     --     end
@@ -129,7 +128,7 @@ function combatCardFunc(thisTable)
     obj = thisTable[1]
     thisColor = thisTable[2]
     if obj.hasTag('lastCombatCardPlayed') == false then
-        printToAll(thisColor .. " played " .. combatCardNames[obj.getVar('iAm') + 1])
+        --printToAll(thisColor .. " played " .. combatCardNames[obj.getVar('iAm') + 1])
     end
 
     if #getObjectsWithTag('lastCombatCardPlayed') == 0 then
@@ -168,15 +167,15 @@ function resourceCardFunc(thisTable)
     thisColor = thisTable[2]
 
     if obj.hasTag('lastResourceCardPlayed') == false then
-        printToAll(thisColor .. " played " .. resourceCardNames[obj.getVar('iAm') + 1])
+       --printToAll(thisColor .. " played " .. resourceCardNames[obj.getVar('iAm') + 1])
         if obj.getVar('iAm') == 0 then --done
             stealACardAction = true
             stealACardPlayerColor = thisColor
             for _, card in ipairs(getObjectsWithTag('lastCombatCardPlayed')) do
                 card.setLock(false)
             end
-            printToColor("Take a card from a players hand or take", thisColor)
-            printToColor("the combat card thats just been played (is in the discard pile)", thisColor)
+            --printToColor("Take a card from a players hand or take", thisColor)
+            --printToColor("the combat card thats just been played (is in the discard pile)", thisColor)
         elseif obj.getVar('iAm') == 1 then --done
             fleinSoppOn = true
         elseif obj.getVar('iAm') == 2 then --not really done
@@ -190,13 +189,12 @@ function resourceCardFunc(thisTable)
                 heavyRainPlayedBeforeMovement = false
             end
         elseif obj.getVar('iAm') == 3 then --done
-            printToColor("PSSST! over here!, those buttons next to the player pieces", thisColor)
-            printToColor("they don't have any restrictions, +1 to yourself, -1 to somebody else", thisColor)
+            --printToColor("PSSST! over here!, those buttons next to the player pieces", thisColor)
+            --printToColor("they don't have any restrictions, +1 to yourself, -1 to somebody else", thisColor)
         elseif obj.getVar('iAm') == 4 then --done
-            StartRagnarok2()
+            --StartRagnarok2()
         elseif obj.getVar('iAm') == 5 then --kinda done
-            printToColor('would you be so kind as to press -- on the relevant player pieces, thx buddy you da best',
-                thisColor)
+            --printToColor('would you be so kind as to press -- on the relevant player pieces, thx buddy you da best',thisColor)
         elseif obj.getVar('iAm') == 6 then --done
             superShoeOn = true
         end
@@ -264,7 +262,7 @@ function onPlayerAction(player, action, targets)
     if Turns.turn_color ~= player.color then
         for _, target in ipairs(targets) do
             if target.hasTag('diec') == true then
-                printToColor('It is ' .. Turns.turn_color .. "'s turn", player.color)
+                --printToColor('It is ' .. Turns.turn_color .. "'s turn", player.color)
                 return false
             end
         end
@@ -272,7 +270,7 @@ function onPlayerAction(player, action, targets)
     if targets[1].hasTag('playerPawn') then
         if targets[1].getVar('playerColor') ~= nil then
             if player.color ~= targets[1].getVar('playerColor') then
-                printToColor('This Chieftan belongs to ' .. targets[1].getVar('playerColor'), player.color)
+                --printToColor('This Chieftan belongs to ' .. targets[1].getVar('playerColor'), player.color)
                 return true
             end
         end
@@ -307,14 +305,14 @@ end
 
 function StartRagnarok()
     if isRagnarokOn == false then
-        printToAll('starting Ragnarok!')
+        --printToAll('starting Ragnarok!')
         isRagnarokOn = true
     end
 end
 
 function StartRagnarok2()
     if isRagnarokOn == false then
-        printToAll('starting Ragnarok!')
+        --printToAll('starting Ragnarok!')
         isRagnarokOn = true
         for _, player in ipairs(getObjectsWithTag('playerPawn')) do
             local vikings = math.ceil(player.getVar('myNumberOfVikings') / 2)
@@ -328,6 +326,7 @@ function StartRagnarok2()
             local params = { image = '', image_bottom = nil }
             --types 'playerSpawnTile' 'forest' 'plains' 'mountain' 'swamp'
             params.image = ragnarokTileImages[tile.getVar('tileType')]
+            params.image_bottom = ragnarokTileImages[tile.getVar('tileType')]
             tile.setCustomObject(params)
             tile.reload()
         end
@@ -345,6 +344,7 @@ function otherRagnarokFunc(i)
         local params = { image = '', image_bottom = nil }
         --types 'playerSpawnTile' 'forest' 'plains' 'mountain' 'swamp'
         params.image = ragnarokTileImages[tile.getVar('tileType')]
+        params.image_bottom = ragnarokTileImages[tile.getVar('tileType')]
         tile.setCustomObject(params)
         tile.reload()
     end
@@ -486,7 +486,7 @@ function spawnGame()
                 Wait.condition(
                 function() -- Executed after our condition is met
                     if self.isDestroyed() then
-                        printToAll("Die was destroyed before it came to rest.")
+                        --printToAll("Die was destroyed before it came to rest.")
                     elseif newNum == true then
                         timesDiceThrownThisTurn = timesDiceThrownThisTurn + 1
                         if timesDiceThrownThisTurn % 2 == 0 then
@@ -595,11 +595,55 @@ function spawnGame()
 end
 
 function destroyAllObjects()
-    for _, object in ipairs(getObjectsWithTag('gameObject')) do
-        destroyObject(object)
+    -- for _, object in ipairs(getObjectsWithTag('gameObject')) do
+    --     destroyObject(object)
+    -- end
+    for _, object in ipairs(getObjects()) do
+        if object.type != 'Board' and object.type != 'Hand' then
+            destroyObject(object)
+        end
+        --destroyObject(object)
     end
+    allPossibleTableTopColors = { "White", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink", "Grey",
+    "Black" }
+    colors = { "Red", "White", "Orange", "Pink", "Yellow", "Purple", "Green", "Blue" }
+    myCombatDeck = 1
+    resourceDeck = 1
+    dice = 1
+
+    deckRotation = { 0, 45 - 90, 0 }
+    combatDiscard = nil
+    resourceDiscard = nil
+    combatDiscardPosition = { 11, 5, 17 }
+    resourceDiscardPostion = { -17, 5, -11 }
+    combatCardNames = { 'Kill 2 vikings', 'Switch to scissors', 'The Golden Card!', 'Switch to rock',
+        'Switch to paper', 'dummy' }
+    combatCardNumbers = {}
+    resourceCardNames = { 'Steal a combatCard', 'Fleinsopp', 'Heavy rain', 'Steal a Viking', 'Gjallarhorn',
+        'Natural disaster', 'Super Shoe' }
+    resourceCardNumbers = {}
+
+    mapAmounts = { 5, 7, 9, 11, 11, 11, 11, 11, 9, 7, 5 }
     tileTypeSpawnAmounts = { 0, 0, 0, 0, 0 }
     numberSpawned = 0
+
+    isRagnarokOn = false
+    ragnarokTurn = 0
+    ragnarokTurnNum = 0
+    everyNturnShrink = 2
+    RagnarokDefStartTurn = 5
+    turnNum = 1
+
+    gameStarted = false
+    heavyRainColor = nil
+    heavyRainTurn = 0
+    heavyRainPlayedBeforeMovement = nil
+    stealACardAction = false
+    stealACardPlayerColor = nil
+    playersInCombat = false
+    playerColorsPicked = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' }
+    playerColorsInCombat = {}
+
     for _, player in ipairs(Player.getPlayers()) do
         for _, obj in ipairs(player.getHandObjects(1)) do
             if obj.isDestroyed() == false then
@@ -805,7 +849,7 @@ function spawnInAPlayer(x, y, z, color, index, vikings)
 end
 
 function printVikings(obj, color, alt_click)
-    printToColor('player has ' .. obj.getVar('myNumberOfVikings') .. ' vikings', color)
+    --printToColor('player has ' .. obj.getVar('myNumberOfVikings') .. ' vikings', color)
 end
 
 function spawnATile(x, y, z, type, customX, customY, additionalTags)
@@ -963,18 +1007,18 @@ function onPlayerTurn(previous_player, cur_player)
         dice.setVar('heavyRainNum', nil)
         dice.setVar('timesDiceThrownThisTurn', 0)
         fleinSoppOn = false
-        printToAll('It is ' .. previous_player.color .. "'s turn.")
+        --printToAll('It is ' .. previous_player.color .. "'s turn.")
         if heavyRainOn == true then
             if heavyRainPlayedBeforeMovement == true then
                 if previous_player.color == heavyRainColor then
                     heavyRainOn = false
-                    printToAll('Heavy rain is over')
+                    --printToAll('Heavy rain is over')
                 end
             else
                 if cur_player.color == heavyRainColor then
                     if heavyRainTurn < turnNum then
                         heavyRainOn = false
-                        printToAll('Heavy rain is over')
+                        --printToAll('Heavy rain is over')
                     end
                 end
             end
