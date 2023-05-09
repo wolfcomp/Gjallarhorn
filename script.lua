@@ -37,7 +37,6 @@ local stealACardPlayerColor = nil
 local playersInCombat = false
 local playerColorsPicked = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' }
 local playerColorsInCombat = {}
-local firstTurnColor = Turns.turn_color
 
 local ragnarokTileImages = {
     playerSpawnTile = 'https://screenshots.wildwolf.dev/Gjallarhorn/tiles/grass_fire.png',
@@ -435,6 +434,7 @@ function randomizeMap(times)
 end
 
 function spawnGame()
+    Turns.enable = true
     printToAll('starting round ' .. turnNum)
     destroyAllObjects()
     gameStarted = true
@@ -935,12 +935,9 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
 end
 
 function onPlayerTurn(previous_player, cur_player)
-    printToAll(Turns.getNextTurnColor())
-
     if cur_player.color == getSeatedPlayers()[#getSeatedPlayers()] and #getObjectsWithTag('playerPawn') ~= 0 then
         turnNum = turnNum + 1
         printToAll('starting round ' .. turnNum)
-        --printToAll(firstTurnColor)
         if turnNum >= RagnarokDefStartTurn then
             isRagnarokOn = true
         end
