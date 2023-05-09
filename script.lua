@@ -4,6 +4,7 @@ local colors = { "Red", "White", "Orange", "Pink", "Yellow", "Purple", "Green", 
 local myCombatDeck = 1
 local resourceDeck = 1
 local dice = 1
+local lastPlayer = 0
 
 local deckRotation = { 0, 45 - 90, 0 }
 local combatDiscard = nil
@@ -25,7 +26,7 @@ local isRagnarokOn = false
 local ragnarokTurn = 0
 local ragnarokTurnNum = 0
 local everyNturnShrink = 2
-local RagnarokDefStartTurn = 5
+local RagnarokDefStartTurn = 6
 local turnNum = 1
 
 local gameStarted = false
@@ -167,7 +168,7 @@ function resourceCardFunc(thisTable)
     thisColor = thisTable[2]
 
     if obj.hasTag('lastResourceCardPlayed') == false then
-       --printToAll(thisColor .. " played " .. resourceCardNames[obj.getVar('iAm') + 1])
+        --printToAll(thisColor .. " played " .. resourceCardNames[obj.getVar('iAm') + 1])
         if obj.getVar('iAm') == 0 then --done
             stealACardAction = true
             stealACardPlayerColor = thisColor
@@ -434,9 +435,9 @@ function randomizeMap(times)
 end
 
 function spawnGame()
-    Turns.enable = true
-    printToAll('starting round ' .. turnNum)
+    printToAll('Starting round ' .. turnNum)
     destroyAllObjects()
+    Turns.enable = true
     gameStarted = true
     --spawning in the map
     for i = 1, 11, 1 do
@@ -488,7 +489,7 @@ function spawnGame()
                 Wait.condition(
                 function() -- Executed after our condition is met
                     if self.isDestroyed() then
-                        
+
                     elseif newNum == true then
                         timesDiceThrownThisTurn = timesDiceThrownThisTurn + 1
                         if timesDiceThrownThisTurn % 2 == 0 then
@@ -601,50 +602,28 @@ function destroyAllObjects()
     --     destroyObject(object)
     -- end
     for _, object in ipairs(getObjects()) do
-        if object.type != 'Board' and object.type != 'Hand' then
+        if object.type ~= 'Board' and object.type ~= 'Hand' then
             destroyObject(object)
         end
         --destroyObject(object)
     end
-    allPossibleTableTopColors = { "White", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink", "Grey",
-    "Black" }
-    colors = { "Red", "White", "Orange", "Pink", "Yellow", "Purple", "Green", "Blue" }
-    myCombatDeck = 1
-    resourceDeck = 1
-    dice = 1
-
-    deckRotation = { 0, 45 - 90, 0 }
     combatDiscard = nil
     resourceDiscard = nil
-    combatDiscardPosition = { 11, 5, 17 }
-    resourceDiscardPostion = { -17, 5, -11 }
-    combatCardNames = { 'Kill 2 vikings', 'Switch to scissors', 'The Golden Card!', 'Switch to rock',
-        'Switch to paper', 'dummy' }
-    combatCardNumbers = {}
-    resourceCardNames = { 'Steal a combatCard', 'Fleinsopp', 'Heavy rain', 'Steal a Viking', 'Gjallarhorn',
-        'Natural disaster', 'Super Shoe' }
-    resourceCardNumbers = {}
 
-    mapAmounts = { 5, 7, 9, 11, 11, 11, 11, 11, 9, 7, 5 }
     tileTypeSpawnAmounts = { 0, 0, 0, 0, 0 }
     numberSpawned = 0
 
     isRagnarokOn = false
     ragnarokTurn = 0
     ragnarokTurnNum = 0
-    everyNturnShrink = 2
-    RagnarokDefStartTurn = 5
     turnNum = 1
 
     gameStarted = false
     heavyRainColor = nil
     heavyRainTurn = 0
     heavyRainPlayedBeforeMovement = nil
-    stealACardAction = false
-    stealACardPlayerColor = nil
     playersInCombat = false
-    playerColorsPicked = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' }
-    playerColorsInCombat = {}
+    Turns.enable = false
 
     for _, player in ipairs(Player.getPlayers()) do
         for _, obj in ipairs(player.getHandObjects(1)) do
@@ -786,7 +765,7 @@ function spawnInAPlayer(x, y, z, color, index, vikings)
         font_size      = 340,
         color          = { 0.5, 0.5, 0.5 },
         font_color     = { 1, 1, 1 },
-        tooltip        = 'number of vikings',
+        tooltip        = 'Number of Vikings (Lives)',
     }
     local textButtonParams2 = {
         click_function = 'subtractAViking',
@@ -883,7 +862,7 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
                 string.lower(colors[tileTypeSpawnAmounts[tileType] + 1]) .. '_tile.png'
             tile.setVar("spawn", true)
             tile.addTag('playerSpawnTile')
-            if(indexOf(getPlayerConnectedColors(), colors[tileTypeSpawnAmounts[tileType] + 1]) ~= nil) then
+            if (indexOf(getPlayerConnectedColors(), colors[tileTypeSpawnAmounts[tileType] + 1]) ~= nil) then
                 local position = tile.getPosition()
                 spawnInAPlayer(
                     position.x,
@@ -934,18 +913,19 @@ function spawnATile(x, y, z, type, customX, customY, additionalTags)
     end
 end
 
-function onPlayerTurn(previous_player, cur_player)
-    if cur_player ~= nil and cur_player.color == getSeatedPlayers()[#getSeatedPlayers()] and #getObjectsWithTag('playerPawn') ~= 0 then
+function onPlayerTurn(cur_player, previous_player)
+    if cur_player ~= nil and previous_player ~= nil and indexOf(allPossibleTableTopColors, previous_player.color) > indexOf(allPossibleTableTopColors, cur_player.color) and #getObjectsWithTag('playerPawn') ~= 0 then
         turnNum = turnNum + 1
-        printToAll('starting round ' .. turnNum)
-        if turnNum >= RagnarokDefStartTurn then
+        printToAll('Starting round ' .. turnNum)
+        if turnNum == RagnarokDefStartTurn then
+            printToAll("Ragnarök has begun!")
             isRagnarokOn = true
         end
         if isRagnarokOn == true then
             ragnarokTurn = ragnarokTurn + 1
             if (ragnarokTurn) % everyNturnShrink == 0 and ragnarokTurnNum < 5 then
                 ragnarokTurnNum = ragnarokTurnNum + 1
-                printToAll('ragnarok round ' .. ragnarokTurnNum)
+                --printToAll('ragnarok round ' .. ragnarokTurnNum)
                 ragnarokFunc(ragnarokTurnNum)
                 for _, playerPawn in pairs(getObjectsWithTag('playerPawn')) do
                     if playerPawn.getVar('myCurrentTile') ~= nil and playerPawn.getVar('myCurrentTile') ~= 0 then
