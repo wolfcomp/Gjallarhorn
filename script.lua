@@ -23,6 +23,7 @@ local tileTypeSpawnAmounts = { 0, 0, 0, 0, 0 }
 local numberSpawned = 0
 
 local isRagnarokOn = false
+local gjallarhorn = false
 local ragnarokTurn = 0
 local ragnarokTurnNum = 0
 local everyNturnShrink = 2
@@ -312,8 +313,9 @@ function StartRagnarok()
 end
 
 function StartRagnarok2()
-    if isRagnarokOn == false then
+    if gjallarhorn == false then
         --printToAll('starting Ragnarok!')
+        gjallarhorn = true
         isRagnarokOn = true
         for _, player in ipairs(getObjectsWithTag('playerPawn')) do
             local vikings = math.ceil(player.getVar('myNumberOfVikings') / 2)
@@ -613,6 +615,7 @@ function destroyAllObjects()
     numberSpawned = 0
 
     isRagnarokOn = false
+    gjallarhorn = false
     ragnarokTurn = 0
     ragnarokTurnNum = 0
     turnNum = 1
