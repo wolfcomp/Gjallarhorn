@@ -714,6 +714,58 @@
       "LuaScript": "",
       "LuaScriptState": "",
       "XmlUI": ""
+    },
+    {
+      "GUID": "5cdc48",
+      "Name": "Custom_PDF",
+      "Transform": {
+        "posX": 23.5,
+        "posY": 1,
+        "posZ": -23.5,
+        "rotX": 0,
+        "rotY": 225,
+        "rotZ": 0,
+        "scaleX": 5.5,
+        "scaleY": 1.0,
+        "scaleZ": 5.5
+      },
+      "Nickname": "",
+      "Description": "",
+      "GMNotes": "",
+      "AltLookAngle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "ColorDiffuse": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0
+      },
+      "Tags": [],
+      "LayoutGroupSortIndex": 0,
+      "Value": 0,
+      "Locked": true,
+      "Grid": true,
+      "Snap": true,
+      "IgnoreFoW": false,
+      "MeasureMovement": false,
+      "DragSelectable": true,
+      "Autoraise": true,
+      "Sticky": true,
+      "Tooltip": true,
+      "GridProjection": false,
+      "HideWhenFaceDown": false,
+      "Hands": false,
+      "CustomPDF": {
+        "PDFUrl": "https://screenshots.wildwolf.dev/Gjallarhorn/Rule_Book.pdf",
+        "PDFPassword": "",
+        "PDFPage": 0,
+        "PDFPageOffset": 0
+      },
+      "LuaScript": "",
+      "LuaScriptState": "",
+      "XmlUI": ""
     }
   ]
 }
