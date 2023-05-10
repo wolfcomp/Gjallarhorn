@@ -463,6 +463,7 @@ function spawnGame()
     dice = spawnObject({
         type = 'Die_6',
         position = { 0, 10, 2 },
+        scale = { 1.75, 1.75, 1.75 }
     })
     dice.addTag('myDice')
     dice.addTag('gameObject')
