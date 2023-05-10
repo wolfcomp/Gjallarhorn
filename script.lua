@@ -598,14 +598,13 @@ function spawnGame()
 end
 
 function destroyAllObjects()
-    -- for _, object in ipairs(getObjectsWithTag('gameObject')) do
-    --     destroyObject(object)
-    -- end
     for _, object in ipairs(getObjects()) do
-        if object.type ~= 'Board' and object.type ~= 'Hand' then
+        if object.type ~= 'Board' and object.type ~= 'Hand' and object.type ~= 'Tile' then
             destroyObject(object)
         end
-        --destroyObject(object)
+        if object.type == 'Tile' and object.name ~= 'Custom_PDF' then
+            destroyObject(object)
+        end
     end
     combatDiscard = nil
     resourceDiscard = nil
