@@ -601,8 +601,7 @@ function destroyAllObjects()
     for _, object in ipairs(getObjects()) do
         if object.type ~= 'Board' and object.type ~= 'Hand' and object.type ~= 'Tile' then
             destroyObject(object)
-        end
-        if object.type == 'Tile' and object.name ~= 'Custom_PDF' then
+        elseif object.type == 'Tile' and object.name ~= 'Custom_PDF' then
             destroyObject(object)
         end
     end
